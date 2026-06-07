@@ -21,15 +21,14 @@
   .evo-slide { display: none; padding-bottom: calc(var(--evo-foot-h, 4rem) + 1rem); }
   .evo-slide.is-active { display: flex; }
 
-  .evo-step .step__inner { max-width: 64rem; }
-  .evo-grid { display: grid; grid-template-columns: 1fr 0.82fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  /* text-only slides: a single centred reading column (images removed for now) */
+  .evo-step .step__inner { max-width: 40rem; }
+  .evo-grid { display: block; }
   .evo-text { min-width: 0; }
   .evo-num { margin: 0 0 1.1rem; }                 /* uses .label from shell */
   .evo-title { margin: 0 0 1.4rem; }               /* h2 from shell */
-  .evo-body { max-width: var(--measure); }
+  .evo-body { max-width: none; }
   .evo-body p { font-family: var(--display); font-size: var(--fs-lede); line-height: var(--lh-body); }
-  .evo-figure { margin: 0; }
-  .evo-figure img { display: block; width: 100%; height: auto; border-radius: 3px; }
 
   /* clickable step numbers along the bottom */
   .evo-foot { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; padding: 1rem var(--pad) clamp(1.4rem, 3.5vh, 2.4rem); pointer-events: none; }
@@ -39,9 +38,6 @@
   .evo-dots button.is-current { color: var(--ember); }
 
   @media (max-width: 820px) {
-    .evo-grid { grid-template-columns: 1fr; gap: 1.4rem; }
-    .evo-figure { order: -1; }
-    .evo-figure img { margin: 0 auto; }
     /* navigate by swipe (or tapping a number) on mobile — hide the side arrows so the bottom is just the numbers */
     .step-side { display: none; }
   }
@@ -72,7 +68,6 @@
           <h1>How fire shaped us</h1>
           <p class="lede">How fire shaped humanity, our brain, and why belonging became our primary survival instinct. Move through it in time, from before fire to the body we still carry.</p>
         </div>
-        <figure class="evo-figure"><img src="images/evo-10.jpg" alt="A circle gathered around a radiant hearth"></figure>
       </div></div>
     </section>
 
@@ -83,7 +78,6 @@
           <h2 class="evo-title">Before fire</h2>
           <div class="evo-body"><p>We lived in small groups of ten to thirty, and most of the body's energy was spent on chewing and digestion. A basic interdependence was already there, in collective defence and shared foraging.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-01.jpg" alt="A line of human figures climbing a slope"></figure>
       </div></div>
     </section>
 
@@ -94,7 +88,6 @@
           <h2 class="evo-title">Controlling the fire</h2>
           <div class="evo-body"><p>There is evidence of fire use from one and a half to two million years ago, and habitual controlled use from around four hundred thousand years ago. It was the first technology that reshaped the environment rather than adapting to it.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-02.jpg" alt="Figures around a fire in a cave"></figure>
       </div></div>
     </section>
 
@@ -105,7 +98,6 @@
           <h2 class="evo-title">Energy dependence</h2>
           <div class="evo-body"><p>The fire had to be obtained, maintained and fed every day, so we externalised our energy source and became fuel dependent. It warmed the body from outside, reducing the energy spent keeping warm, and cooking broke down food before the body had to, yielding thirty to fifty per cent more usable energy. The gut shrank, the jaw lightened, and the cost of digestion dropped.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-03.jpg" alt="A figure carrying firewood toward a fire"></figure>
       </div></div>
     </section>
 
@@ -116,7 +108,6 @@
           <h2 class="evo-title">The new evening</h2>
           <div class="evo-body"><p>Fire created several safe, warm, lit hours every evening, and for the first time humans had predictable shared time not consumed by survival. People sat together, sang, told stories, laughed and touched, every night, for hundreds of thousands of years.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-04.jpg" alt="A circle of figures around a fire under a moon"></figure>
       </div></div>
     </section>
 
@@ -127,7 +118,6 @@
           <h2 class="evo-title">The social brain</h2>
           <div class="evo-body"><p>The energy freed by cooking made a larger brain possible. The brain is two per cent of body weight and uses twenty per cent of our energy, and the prefrontal cortex expanded specifically to manage social complexity. Dunbar's number is the limit of this, roughly one hundred and fifty stable relationships, and beyond it groups need external mechanisms to hold together, shared symbols, beauty, rules.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-05.jpg" alt="A profile with the brain drawn, figures around it"></figure>
       </div></div>
     </section>
 
@@ -138,7 +128,6 @@
           <h2 class="evo-title">Interdependence and the cost of exclusion</h2>
           <div class="evo-body"><p>Fire created the first true division of labour, collecting wood, tending the fire, hunting, processing food, and no individual could survive alone on the savannah. Being part of the group became the primary condition for survival, and social exclusion registers as real physical pain, to make sure we never risk it.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-06.jpg" alt="A crowd of figures and one alone with a lion"></figure>
       </div></div>
     </section>
 
@@ -149,7 +138,6 @@
           <h2 class="evo-title">Language</h2>
           <div class="evo-body"><p>The safe evening hours gave language room to evolve beyond basic communication, and that time was overwhelmingly used for storytelling. Language became the tool for managing relationships, transmitting knowledge and building identity, and with it gossip, reputation and social knowledge became possible.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-07.jpg" alt="Two figures in conversation by firelight"></figure>
       </div></div>
     </section>
 
@@ -160,7 +148,6 @@
           <h2 class="evo-title">Storytelling and the brain</h2>
           <div class="evo-body"><p>The listener's brain synchronises with the speaker's, so a single storyteller can bring an entire room into the same neural state. Every evening was practice in empathy, perspective-taking and cooperation through narrative, and a story is remembered where bare facts are not.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-08.jpg" alt="A storyteller and a circle of listeners by the fire"></figure>
       </div></div>
     </section>
 
@@ -171,7 +158,6 @@
           <h2 class="evo-title">Storytelling and cultural evolution</h2>
           <div class="evo-body"><p>Storytelling let knowledge build across generations without waiting for genes to change, and biology and culture began to accelerate each other. This is what makes us exceptional, the collective ability to accumulate and transmit knowledge.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-09.jpg" alt="Generations gathered, an elder tending a child by the fire"></figure>
       </div></div>
     </section>
 
@@ -182,7 +168,6 @@
           <h2 class="evo-title">The hearth</h2>
           <div class="evo-body"><p>The hearth became the centre of the first settlements, and this is the beginning of home. In the evening hours, humans began making ornaments, patterns and objects. The Latin word for hearth is focus, the thing everything is organised around.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-10.jpg" alt="A circle gathered around a radiant hearth"></figure>
       </div></div>
     </section>
 
@@ -193,7 +178,6 @@
           <h2 class="evo-title">Beauty</h2>
           <div class="evo-body"><p>Humans began making things beautiful, ornaments, patterns, body decoration. Beauty signals group membership at a glance, to strangers, without words, and beyond Dunbar's hundred and fifty, shared aesthetic codes are how trust is established at scale. Beauty also creates pleasure, builds attachment to places and objects, and strengthens bonds.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-11.jpg" alt="Figures adorned with patterns around a fire"></figure>
       </div></div>
     </section>
 
@@ -204,7 +188,6 @@
           <h2 class="evo-title">Belonging</h2>
           <div class="evo-body"><p>Fire created a new kind of belonging, shared experience, shared identity, shared regulation. Humans are co-regulators, the fastest way to feel safe is with each other. By the fire we practised all of these signals together, every night, for hundreds of thousands of years. I belong, I am safe: the body shifts from the sympathetic nervous system of action and fight or flight to the parasympathetic of rest, digest and heal.</p></div>
         </div>
-        <figure class="evo-figure"><img src="images/evo-12.jpg" alt="A parent and child sheltering a small flame"></figure>
       </div></div>
     </section>
 
