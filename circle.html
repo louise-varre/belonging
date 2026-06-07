@@ -158,12 +158,6 @@
       <div class="canvas-wrap">
         <canvas id="c1" width="3000" height="3000"></canvas>
       </div>
-      <div class="sound-btn" id="sound-btn-1">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-          <line class="sound-off-line" x1="23" y1="1" x2="1" y2="23" stroke-width="1.5"/>
-        </svg>
-      </div>
       <div class="slider-area">
         <div class="slider-labels">
           <span class="slider-label slider-label-left">Outside my control</span>
@@ -180,12 +174,6 @@
     <div class="view" id="view-group">
       <div class="canvas-wrap">
         <canvas id="c2" width="1800" height="1800"></canvas>
-      </div>
-      <div class="sound-btn" id="sound-btn-2">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-          <line class="sound-off-line" x1="23" y1="1" x2="1" y2="23" stroke-width="1.5"/>
-        </svg>
       </div>
       <div class="slider-area">
         <div class="slider-labels">
@@ -782,8 +770,7 @@
       else el.classList.remove('active');
     });
   }
-  document.getElementById('sound-btn-1').addEventListener('click', toggleSound);
-  document.getElementById('sound-btn-2').addEventListener('click', toggleSound);
+  // sound button removed
 
   function updateAudio(warmth) {
     if (!audioStarted || !audioCtx || !soundEnabled) return;
