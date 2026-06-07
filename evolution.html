@@ -258,6 +258,25 @@
       if (e.key === 'ArrowRight') show(i + 1);
       if (e.key === 'ArrowLeft') show(i - 1);
     });
+
+    // swipe left/right to change slides on touch devices (vertical scroll still works)
+    const deck = document.getElementById('evo-deck');
+    let tsx = 0, tsy = 0, swiping = false;
+    deck.addEventListener('touchstart', e => {
+      if (e.touches.length !== 1) { swiping = false; return; }
+      tsx = e.touches[0].clientX; tsy = e.touches[0].clientY; swiping = true;
+    }, { passive: true });
+    deck.addEventListener('touchend', e => {
+      if (!swiping) return;
+      swiping = false;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - tsx, dy = t.clientY - tsy;
+      // only count a mostly-horizontal swipe past the threshold
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        show(dx < 0 ? i + 1 : i - 1);
+      }
+    }, { passive: true });
+
     show(0);
 
     // site menu in Contents
