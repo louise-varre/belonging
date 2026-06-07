@@ -615,6 +615,38 @@
   });
   slider2.addEventListener('touchstart', () => { if (soundEnabled) startAudio(); }, { passive: true });
 
+  // ---- finger-drag for the slider triangle ----
+  // The range input has touch-action:none, which blocks the browser's own touch-drag (leaving
+  // only tap-to-jump). This drives the value directly from pointer move, so you can drag the
+  // triangle with a finger. Works for mouse and touch via Pointer Events.
+  function enableThumbDrag(input) {
+    const track = input.closest('.track');
+    let dragging = false;
+    const setFromX = (clientX) => {
+      const r = track.getBoundingClientRect();
+      let pct = (clientX - r.left) / r.width;
+      pct = Math.max(0, Math.min(1, pct));
+      input.value = Math.round(pct * 100);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    input.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      try { input.setPointerCapture(e.pointerId); } catch (_) {}
+      setFromX(e.clientX);
+      e.preventDefault();
+    });
+    input.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      setFromX(e.clientX);
+      e.preventDefault();
+    });
+    const end = (e) => { dragging = false; try { input.releasePointerCapture(e.pointerId); } catch (_) {} };
+    input.addEventListener('pointerup', end);
+    input.addEventListener('pointercancel', end);
+  }
+  enableThumbDrag(slider1);
+  enableThumbDrag(slider2);
+
   // ============ AUDIO (unchanged firelight) ============
   let audioCtx = null;
   let audioStarted = false;
