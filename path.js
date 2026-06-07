@@ -75,12 +75,8 @@ if (panel) {
     return `<li><a class="${cur.trim()}" href="${hrefFor(s.id)}">${s.title}</a></li>`;
   }).join('');
 
-  const sciCur = onScience ? ' is-current' : '';
-  const science =
-    `<li class="jump-underneath"><a class="${sciCur.trim()}" href="${hrefFor(SCIENCE.id)}">` +
-    `${SCIENCE.title}<span class="tag">underneath</span></a></li>`;
-
-  panel.querySelector('.jump-list').innerHTML = steps + science;
+  // science removed from the Contents menu
+  panel.querySelector('.jump-list').innerHTML = steps;
 
   const open = () => panel.classList.add('is-open');
   const close = () => panel.classList.remove('is-open');
