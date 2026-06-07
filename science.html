@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The science · I belong</title>
+<link rel="stylesheet" href="shell.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg2: var(--bg-soft);
+  --text: var(--ink); --text2: var(--ink-soft);
+  --border: var(--line); --border-mid: rgba(33,30,26,0.22); --border-strong: rgba(33,30,26,0.36);
+  --accent: var(--ember);
+  --r: 8px; --rl: 12px;
+}
+
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 3.5rem; }
+
+nav { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 0.5px solid var(--border-mid); padding: 0 2.5rem; display: flex; align-items: center; }
+.nav-title { font-size: var(--fs-label); color: var(--text2); letter-spacing: var(--track-caps); text-transform: uppercase; padding-right: 2rem; border-right: 0.5px solid var(--border); margin-right: 1.5rem; white-space: nowrap; }
+.nav-tab { font-size: var(--fs-small); color: var(--text2); padding: 16px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; }
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+.section { display: none; max-width: 1100px; margin: 0 auto; padding: 2.5rem 2.5rem 4rem; }
+.section.active { display: block; }
+
+.section-heading { margin-bottom: 1.5rem; }
+
+.systems { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px; }
+.sys-card { border-radius: var(--rl); padding: 22px 24px; border: 0.5px solid var(--border); }
+.sys-card.para { background: var(--bg2); }
+.sys-card.sym { background: var(--bg2); }
+.sys-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.sys-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.sys-title { font-size: var(--fs-lede); font-weight: 500; }
+.sys-bullets { list-style: none; padding: 0; margin-bottom: 14px; }
+.sys-bullets li { font-size: var(--fs-body); line-height: 1.65; padding-left: 14px; position: relative; margin-bottom: 6px; }
+.sys-bullets li:last-child { margin-bottom: 0; }
+.sys-bullets li::before { content: "·"; position: absolute; left: 0; font-size: 16px; line-height: 1.3; }
+.sys-survival { font-size: var(--fs-body); line-height: 1.7; padding-top: 14px; border-top: 0.5px solid var(--border); }
+
+.homeostasis { padding: 16px 20px; border-top: 0.5px solid var(--border-mid); border-bottom: 0.5px solid var(--border-mid); }
+.homeostasis-title { font-size: var(--fs-label); font-weight: 500; letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--text2); margin-bottom: 6px; }
+.homeostasis p { font-size: var(--fs-body); color: var(--text2); line-height: 1.7; }
+
+/* SLIDER */
+.slider-wrap { margin-bottom: 1.5rem; }
+.scale-labels { display: flex; justify-content: space-between; font-size: var(--fs-label); color: var(--text2); margin-bottom: 6px; }
+.slider-track { position: relative; height: 8px; border-radius: 4px; margin-bottom: 0; }
+.slider-fill { position: absolute; inset: 0; border-radius: 4px; background: linear-gradient(to right, #3A3027, #6B5E4F, #968A78, #BEB4A2, #DDD5C5); }
+input[type=range] { position: absolute; width: 100%; top: -5px; opacity: 0; cursor: pointer; height: 18px; }
+.slider-thumb { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: var(--bg); border: 2px solid var(--border-strong); top: -7px; transform: translateX(-50%); pointer-events: none; transition: left 0.15s; }
+.snap-dots { display: flex; justify-content: space-between; padding: 6px 0 0; }
+.snap-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-mid); flex-shrink: 0; }
+.state-label { text-align: center; font-size: var(--fs-lede); font-weight: 500; color: var(--text); margin-bottom: 4px; margin-top: 12px; }
+.state-branch { text-align: center; font-size: var(--fs-small); color: var(--text2); margin-bottom: 1.5rem; }
+
+.states-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+.card { background: var(--bg2); border-radius: var(--r); padding: 14px 16px; border: 0.5px solid var(--border); }
+.card-label { font-size: var(--fs-label); color: var(--text2); margin-bottom: 10px; letter-spacing: var(--track-caps); text-transform: uppercase; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: var(--fs-small); padding: 4px 10px; border-radius: 20px; }
+.body-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; font-size: var(--fs-small); }
+.body-item:last-child { margin-bottom: 0; }
+.body-key { color: var(--text2); min-width: 90px; }
+.bar-wrap { display: flex; align-items: center; gap: 8px; }
+.bar-val { font-size: var(--fs-small); font-weight: 500; min-width: 100px; text-align: right; color: var(--text); }
+.bar-bg { width: 60px; height: 6px; background: var(--border); border-radius: 3px; }
+.bar-fill { height: 6px; border-radius: 3px; transition: width 0.3s; }
+.bullet-list { list-style: none; padding: 0; }
+.bullet-list li { font-size: var(--fs-small); color: var(--text); line-height: 1.55; padding-left: 12px; position: relative; margin-bottom: 5px; }
+.bullet-list li:last-child { margin-bottom: 0; }
+.bullet-list li::before { content: "·"; position: absolute; left: 0; color: var(--text2); font-size: 14px; line-height: 1.3; }
+
+/* CHEMICALS */
+.filter-row { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+.filter-btn { font-size: var(--fs-small); padding: 5px 14px; border-radius: 20px; border: 0.5px solid var(--border-mid); background: var(--bg2); cursor: pointer; color: var(--text2); transition: all 0.15s; }
+.filter-btn:hover { color: var(--text); }
+.filter-btn.active { color: var(--text); font-weight: 500; border-color: var(--border-strong); background: var(--bg); }
+.legend-row { display: flex; gap: 20px; margin-bottom: 1.2rem; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: var(--fs-small); color: var(--text2); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: var(--fs-body); table-layout: fixed; }
+thead tr { border-bottom: 1px solid var(--border-strong); }
+th { text-align: left; font-size: var(--fs-label); font-weight: 500; color: var(--text2); letter-spacing: var(--track-caps); text-transform: uppercase; padding: 0 12px 10px 0; }
+th:last-child { padding-right: 0; }
+tbody tr { border-bottom: 0.5px solid var(--border); }
+tbody tr:last-child { border-bottom: none; }
+tbody tr.hidden { display: none; }
+td { vertical-align: top; padding: 14px 12px 14px 0; line-height: 1.5; word-wrap: break-word; }
+td:last-child { padding-right: 0; }
+
+.badge { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; font-size: var(--fs-label); font-weight: 500; border: 1.5px solid; flex-shrink: 0; }
+.name-cell { display: flex; align-items: flex-start; gap: 10px; }
+.name-text { font-weight: 500; padding-top: 6px; color: var(--text); font-size: var(--fs-body); }
+.meta-text { font-size: var(--fs-small); color: var(--text2); line-height: 1.55; }
+
+.t-bullet { list-style: none; padding: 0; }
+.t-bullet li { padding-left: 10px; position: relative; margin-bottom: 4px; color: var(--text); font-size: var(--fs-small); line-height: 1.55; }
+.t-bullet li:last-child { margin-bottom: 0; }
+.t-bullet li::before { content: "·"; position: absolute; left: 0; color: var(--text2); font-size: 13px; line-height: 1.3; }
+.subrow { padding: 9px 0; border-top: 0.5px dashed var(--border-mid); }
+.subrow:first-child { border-top: none; padding-top: 0; }
+.subrow-label { font-size: var(--fs-label); font-weight: 500; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: var(--track-caps); }
+
+.placeholder { border: 0.5px dashed var(--border-mid); border-radius: var(--rl); padding: 3rem 2rem; text-align: center; color: var(--text2); font-size: var(--fs-body); line-height: 1.7; }
+
+/* the path's return link, floated quietly over this scrolling page */
+.step-foot { z-index: 90; padding-top: 1.6rem; background: linear-gradient(to top, var(--bg) 45%, rgba(251, 248, 243, 0)); }
+
+@media (max-width: 700px) {
+  .systems { grid-template-columns: 1fr; }
+  .states-grid { grid-template-columns: 1fr 1fr; }
+  nav { padding: 0 1rem; }
+  .nav-title { display: none; }
+  .section { padding: 2rem 1rem 3rem; }
+}
+</style>
+</head>
+<body data-step="science">
+
+<nav>
+  <div class="nav-title">The biology of belonging</div>
+  <div style="display:flex;gap:0">
+    <button class="nav-tab active" onclick="show('nervous-system',this)">The nervous system</button>
+    <button class="nav-tab" onclick="show('states',this)">States of activation</button>
+    <button class="nav-tab" onclick="show('chemicals',this)">Neurochemicals</button>
+    <button class="nav-tab" onclick="show('fire',this)">Co-regulation</button>
+  </div>
+</nav>
+
+<!-- SECTION 1 -->
+<div class="section active" id="nervous-system">
+  <h2 class="section-heading">The nervous system</h2>
+  <div class="systems">
+    <div class="sys-card sym">
+      <div class="sys-header">
+        <div class="sys-dot" style="background:none;width:auto;height:auto;color:var(--text2);display:flex;align-items:center;"><svg width="17" height="11" viewBox="0 0 15 10" style="display:inline-block;vertical-align:middle"><polyline points="1,9 7.5,2 14,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="sys-title" style="color:var(--text);">Sympathetic nervous system</div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--text2);margin-bottom:6px;">Activates when</div>
+        <div style="font-size:var(--fs-body);color:var(--text);line-height:1.6;">The body needs to act: physical effort, excitement, challenge, or perceived threat</div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--text2);margin-bottom:6px;">What happens in the body</div>
+        <ul class="sys-bullets" style="color:var(--text);">
+          <li>Heart rate and blood pressure rise</li>
+          <li>Focus and sensory acuity sharpen</li>
+          <li>Blood redirects to muscles</li>
+          <li>Sustained activation suppresses digestion, immune function, and repair</li>
+        </ul>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--text2);margin-bottom:6px;">Designed for</div>
+        <div style="font-size:var(--fs-body);color:var(--text);line-height:1.6;">Short bursts. The system evolved for minutes of intense activation followed by full recovery. Chronic activation without recovery drives inflammation, immune suppression, and burnout.</div>
+      </div>
+      <div class="sys-survival" style="color:var(--text);">The essential drive to act, move, and respond. Without it we would lack the energy to find food, protect ourselves, or push forward.</div>
+    </div>
+    <div class="sys-card para">
+      <div class="sys-header">
+        <div class="sys-dot" style="background:none;width:auto;height:auto;color:var(--text2);display:flex;align-items:center;"><svg width="17" height="11" viewBox="0 0 15 10" style="display:inline-block;vertical-align:middle"><path d="M1,5.5 Q4,1.5 7.5,5.5 T14,5.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="sys-title" style="color:var(--text);">Parasympathetic nervous system</div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--text2);margin-bottom:6px;">Activates when</div>
+        <div style="font-size:var(--fs-body);color:var(--text);line-height:1.6;">The nervous system registers safety</div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--text2);margin-bottom:6px;">What happens in the body</div>
+        <ul class="sys-bullets" style="color:var(--text);">
+          <li>Heart rate slows, blood pressure drops</li>
+          <li>Digestion and nutrient absorption activate</li>
+          <li>Tissue repair and immune function strengthen</li>
+        </ul>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--text2);margin-bottom:6px;">Primary nerve</div>
+        <div style="font-size:var(--fs-body);color:var(--text);line-height:1.6;"><strong>The vagus nerve</strong>, the longest cranial nerve in the body, running from brainstem to abdomen</div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--text2);margin-bottom:6px;">Social</div>
+        <div style="font-size:var(--fs-body);color:var(--text);line-height:1.6;">Humans are co-regulators. We depend on one another to reach and hold this state, steadying each other through voice, touch, scent, breath and simple closeness.</div>
+      </div>
+      <div class="sys-survival" style="color:var(--text);">Rest, repair, healing and recovery. Without this, the body cannot rebuild and long-term function breaks down.</div>
+    </div>
+  </div>
+  <div class="homeostasis" style="padding:20px 24px;margin-top:4px;background:var(--bg2);border-radius:var(--r);border:0.5px solid var(--border-mid);">
+    <div class="homeostasis-title" style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Homeostasis</div>
+    <p style="font-size:var(--fs-body);">Both systems are always running at the same time. The body continuously adjusts the ratio between them to meet whatever the moment demands. Neither operates alone, and neither is the better state: we need the sympathetic to act, move and respond, and the parasympathetic to rest, digest and repair. Health is the capacity to move between them and to recover, not to stay at either end. <span onclick="goToTab('states')" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px;">States of activation</span> shows how they work together across a full spectrum.</p>
+  </div>
+  <div class="homeostasis" style="padding:20px 24px;margin-top:12px;background:var(--bg2);border-radius:var(--r);border:0.5px solid var(--border-mid);">
+    <div class="homeostasis-title" style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Social pain</div>
+    <p style="font-size:var(--fs-body);">The brain processes social pain, rejection, exclusion and loss, through some of the same regions it uses for physical pain. Being left out can register in the body as a form of injury, which is part of why the threat system responds to a loss of belonging as it would to a physical danger.</p>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="states">
+  <h2 class="section-heading">States of activation</h2>
+  <div class="slider-wrap">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+      <span style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--text2);display:inline-flex;align-items:center;gap:6px;"><svg width="15" height="10" viewBox="0 0 15 10" style="display:inline-block;vertical-align:middle"><polyline points="1,9 7.5,2 14,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Sympathetic</span>
+      <span style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--text2);display:inline-flex;align-items:center;gap:6px;">Parasympathetic<svg width="15" height="10" viewBox="0 0 15 10" style="display:inline-block;vertical-align:middle"><path d="M1,5.5 Q4,1.5 7.5,5.5 T14,5.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+    </div>
+    <div class="scale-labels">
+      <span>threat</span><span>mild stress</span><span>engaged</span><span>calm alert</span><span>safe</span>
+    </div>
+    <div class="slider-track">
+      <div class="slider-fill"></div>
+      <input type="range" min="0" max="4" step="1" value="4" id="slider">
+      <div class="slider-thumb" id="thumb"></div>
+    </div>
+    <div class="snap-dots">
+      <div class="snap-dot"></div>
+      <div class="snap-dot"></div>
+      <div class="snap-dot"></div>
+      <div class="snap-dot"></div>
+      <div class="snap-dot"></div>
+    </div>
+    <div class="state-label" id="state-label">Deep rest</div>
+    <div class="state-branch" id="state-branch">Connected, digesting, repairing</div>
+  </div>
+  <div class="states-grid">
+    <div class="card">
+      <div class="card-label">Chemicals active</div>
+      <div class="tag-row" id="chemicals-slider"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Body</div>
+      <div id="body-effects"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">How you read others</div>
+      <ul class="bullet-list" id="social"></ul>
+    </div>
+    <div class="card">
+      <div class="card-label">Example triggers</div>
+      <ul class="bullet-list" id="triggers"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="chemicals">
+  <h2 class="section-heading">Neurochemicals</h2>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterChemicals('all',this)">All</button>
+    <button class="filter-btn" onclick="filterChemicals('calm',this)"><span style="color:var(--text2);display:inline-flex;vertical-align:middle;margin-right:5px;"><svg width="15" height="10" viewBox="0 0 15 10" style="display:inline-block;vertical-align:middle"><path d="M1,5.5 Q4,1.5 7.5,5.5 T14,5.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>Parasympathetic</button>
+    <button class="filter-btn" onclick="filterChemicals('mixed',this)">Both systems</button>
+    <button class="filter-btn" onclick="filterChemicals('active',this)"><span style="color:var(--text2);display:inline-flex;vertical-align:middle;margin-right:5px;"><svg width="15" height="10" viewBox="0 0 15 10" style="display:inline-block;vertical-align:middle"><polyline points="1,9 7.5,2 14,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Sympathetic</button>
+  </div>
+  <div id="chem-list"></div>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="fire">
+  <h2 class="section-heading">Co-regulation</h2>
+  <p style="font-size:var(--fs-body);color:var(--text2);line-height:1.7;margin-bottom:1.5rem;max-width:780px;">Every evening for hundreds of thousands of years, our ancestors gathered around the fire and took part in activities that shifted their nervous systems toward safety and connection. When we feel we belong, we feel safe. In that safety the body can relax, heal and restore. Humans are co-regulators: we depend on one another to reach and maintain this calm, healing state.</p>
+
+  <div style="background:var(--bg2);border:0.5px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:18px 20px;margin-bottom:24px;max-width:780px;">
+    <div style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--accent);margin-bottom:8px;">The condition</div>
+    <div style="font-size:var(--fs-lede);font-weight:500;color:var(--text);margin-bottom:8px;">Warmth and firelight</div>
+    <div style="font-size:var(--fs-small);color:var(--text2);line-height:1.7;">Warmth and firelight are the condition the activities happened in. For most of human history fire was the only source of heat and light after dark, and the body reads both as signals of safety: a contained flame holds attention with almost no effort, and warmth lowers arousal and blood pressure. It was the warmth and the light that drew everyone into one place, night after night, so that the singing, the stories, the touch and the shared meals could happen at all.</div>
+  </div>
+
+  <div style="font-size:var(--fs-label);font-weight:500;letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--accent);margin-bottom:12px;">The activities</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="fire-grid"></div>
+</div>
+
+<footer class="step-foot" id="path-foot"></footer>
+
+<script src="chem-data.js"></script>
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function goToTab(id) {
+  const tabs = document.querySelectorAll('.nav-tab');
+  let btn = tabs[0];
+  tabs.forEach(t => {
+    const oc = t.getAttribute('onclick') || '';
+    if (oc.indexOf("'" + id + "'") > -1) btn = t;
+  });
+  show(id, btn);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* BRANCH MARKS — peak = sympathetic (arousal), wave = parasympathetic (settling) */
+const PEAK = '<svg width="15" height="10" viewBox="0 0 15 10" style="display:inline-block;vertical-align:middle"><polyline points="1,9 7.5,2 14,9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const WAVE = '<svg width="15" height="10" viewBox="0 0 15 10" style="display:inline-block;vertical-align:middle"><path d="M1,5.5 Q4,1.5 7.5,5.5 T14,5.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+
+const BRANCH = {
+  oxytocin: 'p', serotonin: 'p', gaba: 'p',
+  dopamine: 'b', endorphins: 'b',
+  norepinephrine: 's', adrenaline: 's', cortisol: 's', 'moderate cortisol': 's'
+};
+
+function markFor(name) {
+  const b = BRANCH[name.toLowerCase()] || 'b';
+  const marks = b === 's' ? PEAK : b === 'p' ? WAVE : PEAK + WAVE;
+  return '<span style="color:var(--text2);display:inline-flex;align-items:center;gap:3px;">' + marks + '</span>';
+}
+
+/* Neutral chip carrying its branch mark */
+function chipHTML(name, click) {
+  const onclick = click ? ` onclick="${click}"` : '';
+  return '<span class="chip-n" style="display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-small);padding:4px 11px;border-radius:20px;background:var(--bg2);color:var(--text);border:0.5px solid var(--border);cursor:pointer;"' + onclick + '>' + markFor(name) + name + '</span>';
+}
+
+/* SLIDER */
+const snapPositions = [0, 25, 50, 75, 100];
+
+const sliderStates = [
+  {
+    label: "Threat activation", branch: "Full sympathetic response, connection offline",
+    chemicals: [
+      { name: "adrenaline", color: "#A32D2D", bg: "#FCEBEB" },
+      { name: "cortisol", color: "#A32D2D", bg: "#FCEBEB" },
+      { name: "norepinephrine", color: "#A32D2D", bg: "#FCEBEB" }
+    ],
+    body: [
+      { k: "Heart rate", v: "high, fast", pct: 94 },
+      { k: "Breathing", v: "shallow, rapid", pct: 18 },
+      { k: "Digestion", v: "shut down", pct: 5 },
+      { k: "Muscle tension", v: "high", pct: 94 }
+    ],
+    social: ["Faces read as hostile or threatening","Neutral expressions misread as negative","Trust collapses rapidly","Tunnel vision, peripheral signals lost"],
+    triggers: ["Physical danger","Acute conflict","Public humiliation","Panic","Severe financial threat"],
+    barColor: "#E24B4A"
+  },
+  {
+    label: "Mild stress", branch: "Mobilised, repair and connection receding",
+    chemicals: [
+      { name: "cortisol", color: "#A32D2D", bg: "#FCEBEB" },
+      { name: "adrenaline", color: "#A32D2D", bg: "#FCEBEB" },
+      { name: "norepinephrine", color: "#A32D2D", bg: "#FCEBEB" },
+      { name: "dopamine", color: "#185FA5", bg: "#E6F1FB" }
+    ],
+    body: [
+      { k: "Heart rate", v: "elevated, tense", pct: 70 },
+      { k: "Breathing", v: "shallow, quicker", pct: 38 },
+      { k: "Digestion", v: "slowing", pct: 28 },
+      { k: "Muscle tension", v: "building", pct: 68 }
+    ],
+    social: ["Less accurate reading others","Mild self-focus","Neutral signals read as slightly negative","Patience shorter, empathy reduced"],
+    triggers: ["Deadline pressure","Difficult conversation approaching","Interrupted sleep over days","Financial worry","Low-grade uncertainty"],
+    barColor: "#D85A30"
+  },
+  {
+    label: "Engaged arousal", branch: "Both systems active, positively aroused",
+    chemicals: [
+      { name: "dopamine", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "endorphins", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "adrenaline", color: "#A32D2D", bg: "#FCEBEB" },
+      { name: "norepinephrine", color: "#A32D2D", bg: "#FCEBEB" },
+      { name: "moderate cortisol", color: "#BA7517", bg: "#FAEEDA" }
+    ],
+    body: [
+      { k: "Heart rate", v: "elevated, energised", pct: 62 },
+      { k: "Breathing", v: "fuller, faster", pct: 55 },
+      { k: "Digestion", v: "reduced", pct: 45 },
+      { k: "Muscle tension", v: "primed", pct: 58 }
+    ],
+    social: ["Highly attuned to the room","Reading cues quickly, not always accurately","Charisma and presence increased","Less patience for peripheral detail"],
+    triggers: ["Public speaking","Physical competition","Falling in love","First day of something new","A conversation that matters","Creative risk"],
+    barColor: "#EF9F27"
+  },
+  {
+    label: "Calm alert", branch: "Rested, present, available",
+    chemicals: [
+      { name: "oxytocin", color: "#0F6E56", bg: "#E1F5EE" },
+      { name: "serotonin", color: "#0F6E56", bg: "#E1F5EE" },
+      { name: "dopamine", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "endorphins", color: "#185FA5", bg: "#E6F1FB" }
+    ],
+    body: [
+      { k: "Heart rate", v: "steady, present", pct: 42 },
+      { k: "Breathing", v: "easy, rhythmic", pct: 68 },
+      { k: "Digestion", v: "normal", pct: 72 },
+      { k: "Muscle tension", v: "ready, not tense", pct: 32 }
+    ],
+    social: ["High accuracy reading facial expressions","Curious, not defensive","Empathy fully accessible","Can hold nuance and complexity"],
+    triggers: ["Absorbing work","Good conversation","Creative flow","Morning after good sleep","Exercise just completed"],
+    barColor: "#5DCAA5"
+  },
+  {
+    label: "Deep rest", branch: "Connected, digesting, repairing",
+    chemicals: [
+      { name: "oxytocin", color: "#0F6E56", bg: "#E1F5EE" },
+      { name: "serotonin", color: "#0F6E56", bg: "#E1F5EE" },
+      { name: "endorphins", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "GABA", color: "#085041", bg: "#E1F5EE" }
+    ],
+    body: [
+      { k: "Heart rate", v: "slow, stable", pct: 22 },
+      { k: "Breathing", v: "deep, slow", pct: 85 },
+      { k: "Digestion", v: "fully active", pct: 95 },
+      { k: "Muscle tension", v: "relaxed", pct: 12 }
+    ],
+    social: ["Faces read as open and safe","Voice tones register as warm","Co-regulation effortless","Social connection feels natural"],
+    triggers: ["Shared meal with people you trust","Physical warmth","Gentle touch","Familiar voices","Just after deep sleep"],
+    barColor: "#1D9E75"
+  }
+];
+
+const chemNameToIndex = {
+  "oxytocin": 0, "Oxytocin": 0,
+  "serotonin": 1, "Serotonin": 1,
+  "gaba": 2, "GABA": 2,
+  "endorphins": 3, "Endorphins": 3,
+  "dopamine": 4, "Dopamine": 4,
+  "norepinephrine": 5, "Norepinephrine": 5,
+  "adrenaline": 6, "Adrenaline": 6,
+  "cortisol": 7, "Cortisol": 7, "moderate cortisol": 7
+};
+
+function goToChemical(name) {
+  const idx = chemNameToIndex[name] !== undefined ? chemNameToIndex[name] : chemNameToIndex[name.toLowerCase()];
+  if (idx === undefined) return;
+  const chemTab = document.querySelector('.nav-tab:nth-child(3)');
+  show('chemicals', chemTab);
+  document.querySelectorAll('.chem-row').forEach(r => r.style.display = '');
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.filter-btn').classList.add('active');
+  for (let j = 0; j < chemicals.length; j++) {
+    const exp = document.querySelector(`.chem-expand-${j}`);
+    const chev = document.querySelector(`.chem-chevron-${j}`);
+    if (exp) { exp.style.display = 'none'; }
+    if (chev) { chev.textContent = '+'; }
+  }
+  toggleChem(idx);
+  const row = document.querySelectorAll('.chem-row')[idx];
+  if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderState(i) {
+  const s = sliderStates[i];
+  const pct = snapPositions[i];
+  document.getElementById("thumb").style.left = pct + "%";
+  document.getElementById("state-label").textContent = s.label;
+  document.getElementById("state-branch").textContent = s.branch;
+  document.getElementById("chemicals-slider").innerHTML = s.chemicals.map(c =>
+    chipHTML(c.name, `goToChemical('${c.name}')`)
+  ).join("");
+  document.getElementById("body-effects").innerHTML = s.body.map(b =>
+    `<div class="body-item">
+      <span class="body-key">${b.k}</span>
+      <span class="bar-val">${b.v}</span>
+    </div>`
+  ).join("");
+  document.getElementById("social").innerHTML = s.social.map(i => `<li>${i}</li>`).join("");
+  document.getElementById("triggers").innerHTML = s.triggers.map(i => `<li>${i}</li>`).join("");
+}
+
+const slider = document.getElementById("slider");
+slider.addEventListener("input", () => renderState(parseInt(slider.value)));
+renderState(4);
+
+/* CHEMICALS TABLE */
+const CC = {
+  calm:   { text: "#0F6E56", bg: "#E1F5EE", border: "#1D9E75" },
+  mixed:  { text: "#185FA5", bg: "#E6F1FB", border: "#378ADD" },
+  active: { text: "#A32D2D", bg: "#FCEBEB", border: "#E24B4A" }
+};
+
+/* the eight chemicals come from the shared single source, chem-data.js */
+const chemicals = CHEMICALS;
+const chemSummary = CHEM_SUMMARY;
+
+function bulletsHTML(items) {
+  if (!items || !items.length) return `<span style="font-size:var(--fs-small);color:var(--text2)">Not applicable</span>`;
+  return `<ul class="t-bullet">${items.map(b => `<li>${b}</li>`).join("")}</ul>`;
+}
+
+function buildTable() {
+  const col_map = CC;
+  document.getElementById("chem-list").innerHTML = chemicals.map((c, i) => {
+    const col = col_map[c.type];
+    const summary = chemSummary[c.name] || "";
+    const meta = `${c.kind}, produced in ${c.produced}`;
+    const doesHTML = bulletsHTML(c.does);
+    const trigsHTML = bulletsHTML(c.triggers);
+
+    return `<div class="chem-row" data-type="${c.type}" style="border-bottom:0.5px solid var(--border);">
+      <div onclick="toggleChem(${i})" style="display:flex;align-items:center;gap:12px;padding:14px 0;cursor:pointer;">
+        <div style="width:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${markFor(c.name)}</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;">
+            <span style="font-size:var(--fs-lede);font-weight:500;color:var(--text)">${c.name}</span>
+            <span style="font-size:var(--fs-small);color:var(--text2);">${summary}</span>
+          </div>
+          <div style="font-size:var(--fs-small);color:var(--text2);margin-top:2px;font-style:italic;">${meta}</div>
+        </div>
+        <div class="chem-chevron-${i}" style="font-size:var(--fs-small);color:var(--text2);flex-shrink:0;">+</div>
+      </div>
+      <div class="chem-expand-${i}" style="display:none;padding-bottom:16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <div style="font-size:var(--fs-label);font-weight:500;color:var(--text2);letter-spacing:var(--track-caps);text-transform:uppercase;margin-bottom:6px;">What it does</div>
+            ${doesHTML}
+          </div>
+          <div>
+            <div style="font-size:var(--fs-label);font-weight:500;color:var(--text2);letter-spacing:var(--track-caps);text-transform:uppercase;margin-bottom:6px;">Triggers</div>
+            ${trigsHTML}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function toggleChem(i) {
+  const expand = document.querySelector(`.chem-expand-${i}`);
+  const chevron = document.querySelector(`.chem-chevron-${i}`);
+  const open = expand.style.display !== 'none';
+  expand.style.display = open ? 'none' : 'block';
+  chevron.textContent = open ? '+' : '×';
+}
+
+function filterChemicals(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.chem-row').forEach(row => {
+    row.style.display = (type === 'all' || row.dataset.type === type) ? '' : 'none';
+  });
+}
+
+buildTable();
+
+const fireActivities = [
+  {
+    name: "Singing and humming",
+    chemicals: [
+      { name: "Endorphins", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "Oxytocin", color: "#0F6E56", bg: "#E1F5EE" },
+      { name: "GABA", color: "#085041", bg: "#E1F5EE" }
+    ],
+    body: "Vibrations from the larynx and diaphragm directly stimulate the vagus nerve, increasing heart-rate variability and shifting the body toward parasympathetic dominance within minutes. Group singing produces even stronger effects because breathing and heart rates begin to synchronise across the group."
+  },
+  {
+    name: "Storytelling",
+    chemicals: [
+      { name: "Oxytocin", color: "#0F6E56", bg: "#E1F5EE" },
+      { name: "Dopamine", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "Serotonin", color: "#0F6E56", bg: "#E1F5EE" }
+    ],
+    body: "Listening to a calm, rhythmic voice activates the vagus nerve through auditory pathways. It reduces cortisol and promotes co-regulation: one calm nervous system calming another. Firelight shifted conversation toward stories, which built empathy, shared imagination, and social norms."
+  },
+  {
+    name: "Slow breathing",
+    chemicals: [
+      { name: "GABA", color: "#085041", bg: "#E1F5EE" },
+      { name: "Serotonin", color: "#0F6E56", bg: "#E1F5EE" }
+    ],
+    body: "Long exhalations are one of the fastest known ways to activate the vagus nerve. The relaxed posture and warmth of sitting by the fire naturally encouraged slower, deeper breathing, which directly strengthens parasympathetic tone and lowers heart rate and blood pressure."
+  },
+  {
+    name: "Shared meals",
+    chemicals: [
+      { name: "Oxytocin", color: "#0F6E56", bg: "#E1F5EE" },
+      { name: "Dopamine", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "Serotonin", color: "#0F6E56", bg: "#E1F5EE" }
+    ],
+    body: "The parasympathetic system drives digestion directly. Eating together in a safe group setting activates rest-and-digest mode, releasing oxytocin through proximity and shared attention. People who eat socially more often report higher trust, greater wellbeing, and stronger community bonds."
+  },
+  {
+    name: "Gentle touch and proximity",
+    chemicals: [
+      { name: "Oxytocin", color: "#0F6E56", bg: "#E1F5EE" },
+      { name: "Endorphins", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "Serotonin", color: "#0F6E56", bg: "#E1F5EE" }
+    ],
+    body: "Slow, gentle touch sends safety signals to the emotional brain and triggers oxytocin release. Physical closeness meant bodies were near enough to transmit chemical signals about emotional state and safety below conscious awareness, directly regulating each other's nervous systems."
+  },
+  {
+    name: "Laughter",
+    chemicals: [
+      { name: "Endorphins", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "Oxytocin", color: "#0F6E56", bg: "#E1F5EE" }
+    ],
+    body: "Laughter produces rapid exhalations that stimulate the vagus nerve and release endorphins. Social laughter releases significantly more endorphins than laughing alone. It is 30 times more frequent in social settings than in solitude, and measurably increases pain tolerance, a reliable proxy for endorphin release."
+  },
+  {
+    name: "Rhythmic movement",
+    chemicals: [
+      { name: "Endorphins", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "Dopamine", color: "#185FA5", bg: "#E6F1FB" },
+      { name: "Oxytocin", color: "#0F6E56", bg: "#E1F5EE" }
+    ],
+    body: "Swaying, clapping, and dancing together create endorphin release and further vagal activation. Synchronised movement produces stronger bonding effects than the same movement done out of sync, even when physical effort is identical. It aligns heart rates and breathing across the group."
+  }
+];
+
+const fireGrid = document.getElementById("fire-grid");
+fireGrid.innerHTML = fireActivities.map((a, i) => `
+  <div class="fire-card" onclick="toggleFire(${i})" style="background:var(--bg2);border-radius:10px;padding:14px 16px;border:0.5px solid var(--border);cursor:pointer;transition:border-color 0.15s;">
+    <div style="font-size:var(--fs-body);font-weight:500;color:var(--text);margin-bottom:8px;">${a.name}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;">${a.chemicals.map(c => chipHTML(c.name, `event.stopPropagation();goToChemical('${c.name}')`)).join("")}</div>
+    <div class="fire-body" style="display:none;font-size:var(--fs-small);color:var(--text2);line-height:1.65;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);">${a.body}</div>
+  </div>
+`).join("");
+
+function toggleFire(i) {
+  const cards = document.querySelectorAll('.fire-card');
+  const card = cards[i];
+  const wasActive = card.style.borderColor === 'rgb(180, 99, 60)';
+  cards.forEach(c => {
+    c.style.borderColor = '';
+    c.querySelector('.fire-body').style.display = 'none';
+  });
+  if (!wasActive) {
+    card.style.borderColor = '#B4633C';
+    card.querySelector('.fire-body').style.display = 'block';
+  }
+}
+</script>
+
+<script src="path.js"></script>
+</body>
+</html>

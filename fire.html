@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The fire · I belong</title>
+<link rel="stylesheet" href="shell.css">
+<style>
+  /* the warm firelight pools on the off-white, on brand with the rest */
+  body[data-step="fire"] {
+    background: radial-gradient(120% 140% at 50% 38%, #FCF4E6 0%, var(--bg) 52%, var(--bg-soft) 100%);
+    background-attachment: fixed;
+  }
+
+  /* title and intro sit at the top, the circle below; the page scrolls when
+     the two together are taller than one screen */
+  .step--fire {
+    justify-content: flex-start;
+    padding-top: clamp(3rem, 7vh, 5rem);
+    padding-bottom: clamp(3.5rem, 8vh, 5rem);
+    gap: clamp(3.5rem, 9vh, 6rem);
+  }
+
+  .fire-intro {
+    width: 100%;
+    max-width: var(--step-max);
+    margin: 0 auto;
+  }
+
+  .stage {
+    position: relative;
+    width: min(58vh, 82vw, 560px);
+    height: min(58vh, 82vw, 560px);
+    flex: none;
+  }
+
+  .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; overflow: visible; }
+  #flame { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+
+  .ring {
+    fill: none;
+    opacity: 0;
+    vector-effect: non-scaling-stroke;
+    animation: ringIn 1.6s ease 0.3s forwards;
+  }
+  .ring.inner { stroke: var(--ember); stroke-width: 2; }
+  .ring.outer { stroke: var(--ink-faint); stroke-width: 1.5; }
+  @keyframes ringIn { to { opacity: 0.8; } }
+
+  /* leader line from each disc out to its title */
+  .lead-line {
+    stroke: var(--ink-faint);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    opacity: 0;
+    animation: ringIn 1.4s ease forwards;
+  }
+  /* the dark grey discs gathered around the fire */
+  .node {
+    fill: var(--ink-soft);
+    cursor: pointer;
+    opacity: 0;
+    animation: leadDotIn 1.2s ease forwards;
+    transition: fill 0.25s ease;
+  }
+  .node:hover, .node:focus-visible { fill: var(--ember); outline: none; }
+  @keyframes leadDotIn { to { opacity: 0.95; } }
+
+  .activity {
+    position: absolute;
+    z-index: 4;
+    text-align: center;
+    font-family: var(--body);
+    font-size: clamp(11px, 1.4vw, 14px);
+    letter-spacing: var(--track-caps);
+    text-transform: uppercase;
+    line-height: 1.5;
+    color: var(--ink);
+    white-space: nowrap;
+    opacity: 0;
+    animation: actIn 1s ease forwards;
+    transition: color 0.25s ease, text-shadow 0.25s ease;
+  }
+  /* anchor each title away from its line so the line never strikes through it */
+  .activity.pos-top, .activity.pos-bottom { transform: translate(-50%, -50%); }
+  .activity.pos-right { transform: translate(0, -50%); text-align: left; }
+  .activity.pos-left  { transform: translate(-100%, -50%); text-align: right; }
+  .activity--link { cursor: pointer; }
+  .activity--link:hover,
+  .activity--link:focus-visible {
+    color: var(--ember);
+    text-shadow: 0 0 16px rgba(180, 99, 60, 0.2);
+    outline: none;
+  }
+  @keyframes actIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .centre {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 5;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.6rem 0.8rem;
+    font-family: inherit;
+  }
+  .centre .word {
+    font-size: clamp(11px, 1.4vw, 14px);
+    letter-spacing: var(--track-caps);
+    text-transform: uppercase;
+    color: var(--ink);
+    text-shadow: none;
+    line-height: 1.5;
+  }
+
+  /* ---- the science panel ---- */
+  .sci-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    background: rgba(8, 7, 5, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .sci-scrim.is-open { opacity: 1; pointer-events: auto; }
+
+  .sci-panel {
+    position: fixed;
+    top: 0; right: 0;
+    z-index: 40;
+    width: min(30rem, 92vw);
+    height: 100%;
+    background: var(--bg-soft);
+    border-left: 1px solid var(--line);
+    padding: clamp(2rem, 5vw, 3.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transform: translateX(100%);
+    transition: transform 0.36s cubic-bezier(0.22, 0.61, 0.36, 1);
+    overflow-y: auto;
+    pointer-events: none;
+  }
+  .sci-panel.is-open { transform: translateX(0); pointer-events: auto; }
+
+  .sci-panel__close {
+    position: absolute;
+    top: 1.2rem; right: clamp(2rem, 5vw, 3.5rem);
+    background: none; border: none; cursor: pointer;
+    font-family: var(--body);
+    font-size: var(--fs-label); letter-spacing: var(--track-caps); text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .sci-panel__close:hover { color: var(--ember); }
+
+  .sci-panel__eyebrow {
+    font-family: var(--body);
+    font-size: var(--fs-label); letter-spacing: var(--track-caps); text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 1rem;
+  }
+  .sci-panel__eyebrow:empty { display: none; }
+  .sci-deep { margin-top: 1.4rem; }
+  .sci-deep summary {
+    cursor: pointer; list-style: none;
+    font-family: var(--body);
+    font-size: var(--fs-label); letter-spacing: var(--track-caps); text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 0.3rem 0;
+    border-top: 1px solid var(--line);
+    padding-top: 0.9rem;
+  }
+  .sci-deep summary::-webkit-details-marker { display: none; }
+  .sci-deep summary::after { content: ' +'; }
+  .sci-deep[open] summary::after { content: ' \2013'; }
+  .sci-deep summary:hover { color: var(--ember); }
+  .sci-deep > p { margin: 0.9rem 0 0; font-size: var(--fs-body); }
+  .sci-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; }
+  .chem-chip { cursor: pointer; }
+
+  .chem-modal { display: none; position: fixed; inset: 0; z-index: 60; background: rgba(8,7,5,0.5); align-items: center; justify-content: center; padding: 24px; }
+  .chem-modal.is-open { display: flex; }
+  .chem-modal__card { position: relative; background: var(--bg-soft); border: 1px solid var(--line); border-left: 3px solid var(--ember); border-radius: 4px; max-width: 440px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 26px 28px; }
+  .chem-modal__close { position: absolute; top: 12px; right: 14px; background: none; border: none; font-size: 22px; line-height: 1; color: var(--ink-soft); cursor: pointer; }
+  .chem-modal__close:hover { color: var(--ember); }
+  .chem-modal__name { font-family: var(--display); font-size: var(--fs-lede); font-weight: 500; margin-bottom: 4px; }
+  .chem-modal__meta { font-size: var(--fs-small); color: var(--ink-soft); font-style: italic; margin-bottom: 12px; }
+  .chem-modal__sum { font-size: var(--fs-body); line-height: 1.6; padding-bottom: 14px; border-bottom: 0.5px solid var(--line); }
+  .chem-modal__sec { margin-top: 14px; }
+  .chem-modal__label { font-size: var(--fs-label); font-weight: 500; letter-spacing: var(--track-caps); text-transform: uppercase; color: var(--ink-soft); margin-bottom: 7px; }
+  .chem-modal__list { list-style: none; padding: 0; margin: 0; }
+  .chem-modal__list li { font-size: var(--fs-small); line-height: 1.55; padding-left: 14px; position: relative; margin-bottom: 6px; }
+  .chem-modal__list li::before { content: "·"; position: absolute; left: 0; color: var(--ink-soft); }
+  .sci-panel__title {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: var(--fs-title);
+    line-height: 1.1;
+    margin: 0 0 1.2rem;
+  }
+  .sci-panel__body {
+    font-family: var(--body);
+    font-size: var(--fs-body);
+    line-height: 1.7;
+    color: var(--ink);
+    margin: 0;
+  }
+  .sci-panel__body p { margin: 0 0 1rem; }
+  .sci-panel__body p:last-child { margin-bottom: 0; }
+
+  @media (max-width: 640px) {
+    .sci-panel {
+      top: auto; bottom: 0;
+      width: 100%; height: auto;
+      max-height: 78vh;
+      border-left: none;
+      border-top: 1px solid var(--line);
+      transform: translateY(100%);
+    }
+    .sci-panel.is-open { transform: translateY(0); }
+  }
+</style>
+</head>
+<body data-step="fire">
+
+  <button class="jump-open" id="jump-open">Contents</button>
+
+  <main class="step step--fire">
+    <div class="fire-intro">
+      <h1>Around the fire</h1>
+      <p class="lede">The combination of the flame and its heat, and all of these activities, made us feel good, the warmth of being close and the sense that we mattered to the people there, and at the same time settled the body out of its alert state into calm. Open any of them to see how it works.</p>
+    </div>
+    <div class="stage">
+      <svg id="lines" viewBox="0 0 760 760" preserveAspectRatio="xMidYMid meet"></svg>
+      <canvas id="flame" width="760" height="760"></canvas>
+      <button class="centre activity--link" id="centre" type="button"><span class="word">Flame &amp; warmth</span></button>
+      <div id="activities"></div>
+    </div>
+  </main>
+
+  <nav class="jump-panel" id="jump-panel">
+    <button class="jump-panel__close">Close</button>
+    <ul class="jump-list"></ul>
+  </nav>
+
+  <aside class="sci-panel" id="sci-panel" aria-hidden="true">
+    <button class="sci-panel__close" id="sci-close">Close</button>
+    <p class="sci-panel__eyebrow" id="sci-eyebrow"></p>
+    <h2 class="sci-panel__title" id="sci-title"></h2>
+    <div class="sci-panel__body" id="sci-body"></div>
+  </aside>
+  <div class="sci-scrim" id="sci-scrim"></div>
+
+  <div class="chem-modal" id="chem-modal">
+    <div class="chem-modal__card" role="dialog" aria-modal="true" aria-labelledby="cm-name">
+      <button class="chem-modal__close" id="chem-close" aria-label="Close">&times;</button>
+      <div class="chem-modal__name" id="cm-name"></div>
+      <div class="chem-modal__meta" id="cm-meta"></div>
+      <div class="chem-modal__sum" id="cm-sum"></div>
+      <div class="chem-modal__sec"><div class="chem-modal__label">What it does</div><ul class="chem-modal__list" id="cm-does"></ul></div>
+      <div class="chem-modal__sec"><div class="chem-modal__label">Triggers</div><ul class="chem-modal__list" id="cm-trig"></ul></div>
+    </div>
+  </div>
+
+  <footer class="step-foot" id="path-foot"></footer>
+
+  <script src="chem-data.js"></script>
+  <script>
+  (function () {
+  /* The activities, in order from the top, clockwise.
+     Science is taken verbatim from Louise's wall texts.
+     NOTE: laughter and rhythmic movement are one combined wall text in the
+     source; the two blocks below are that text split in two, to be checked. */
+  const ACTIVITIES = [
+    {
+      id: 'singing',
+      label: 'Singing &\nhumming',
+      title: 'Singing and humming',
+      wall: `Before language, there was rhythm and sound. Around the fire, singing and humming were part of being together. Singing in a group synchronises the heart rates and breathing of everyone present, measurably and within minutes. Lullabies slow a child's heart through the voice alone. Humming is the version that happens almost on its own, the low sound that accompanied preparing the fire, settling the children, and the quiet hours before sleep.`,
+      science: `Humming and singing vibrate the larynx and diaphragm, which stimulates the vagus nerve and increases heart rate variability, a standard marker of parasympathetic activity. Group singing releases oxytocin and endorphins, with the effect even more pronounced in larger groups. Pleasurable music also triggers dopamine in the brain's reward pathways.`,
+      chemicals: ['oxytocin', 'endorphins', 'dopamine']
+    },
+    {
+      id: 'storytelling',
+      label: 'Storytelling',
+      title: 'Storytelling',
+      wall: `Storytelling is one of the most efficient ways humans transmit knowledge, identity and shared understanding. When we tell and listen to stories, the brain activity of the listeners synchronises with the teller's, breath and heart rate begin to align, and the listener runs the story internally as if they were living it. This is the body co-regulating through the voice. It is also how empathy is built, between the people present and across generations.`,
+      science: `When we listen to a story, the same regions of the brain are active as when we live the events ourselves. Across a group of listeners, brain activity synchronises with the teller's and with one another, measured directly as neural synchrony, and breath and heart rate begin to align with it.`,
+      chemicals: ['oxytocin']
+    },
+    {
+      id: 'meals',
+      label: 'Shared meals',
+      title: 'Shared meals',
+      wall: `Around the fire, the meal was always shared. To put food into another person's hand is one of the oldest signals of trust the human body knows, present across every culture that has been studied. The giving and the receiving both register as care, and the bond runs in both directions. The word companion comes from the Latin cum panis, with bread, the person you spent time with was the person you shared bread with.`,
+      science: `Eating engages two reward systems at once: dopamine drives the pull toward the food, and the opioid system produces the pleasure of eating itself. Giving food activates the same reward circuits in the giver as receiving does, and triggers oxytocin in both. Studies across cultures show that people who eat socially more often report higher life satisfaction, greater trust in others, and larger networks of close friends.`,
+      chemicals: ['dopamine', 'endorphins', 'oxytocin']
+    },
+    {
+      id: 'touch',
+      label: 'Gentle touch &\nproximity',
+      title: 'Gentle touch and proximity',
+      wall: `Around the fire, where bodies were close to each other for hours every evening, touch was constant and almost always low-key: the passing of food, the brush of arms while sitting, a child leaning against a parent, a hand on a shoulder while pointing at something in the flames. The skin is built for this, carrying a specific type of nerve fibre that responds only to slow, kind contact, at roughly the speed of a parent's stroke. Touch is the first sense to develop in the womb and the last to fade at the end of life, and being held by another person is one of the most direct ways the body knows it is safe and that it belongs.`,
+      science: `C-tactile afferents are dedicated nerve fibres in hairy skin that respond only to slow, light, skin-temperature touch, optimally at around three centimetres per second. Their activation releases endogenous opioids, the body's own source of comfort, and when the opioid receptors are blocked the felt warmth of friendly touch measurably drops. Holding the hand of a trusted person reduces the brain's pain response, measured in fMRI, in proportion to the closeness of the relationship.`,
+      chemicals: ['endorphins', 'oxytocin']
+    },
+    {
+      id: 'laughter',
+      label: 'Laughter',
+      title: 'Laughter',
+      wall: `Laughter is among the oldest things humans do together, present in every culture that has been studied, and older than language. It is not mainly a response to something funny, it is a social signal, a way of saying this is play, not threat, we are safe with each other.`,
+      science: `Social laughter occurs roughly thirty times more often in company than alone, and releases endogenous opioids, the body's own source of pain relief and comfort, shown directly in brain imaging. Hearing laughter activates regions of the motor cortex that prepare the listener to laugh too.`,
+      chemicals: ['endorphins', 'dopamine']
+    },
+    {
+      id: 'movement',
+      label: 'Rhythmic\nmovement',
+      title: 'Rhythmic movement',
+      wall: `Rhythmic movement is among the oldest things humans do together. Around the fire, movement was part of being together: the swaying, the clapping, the dancing, the steady release of the day's tension through the body.`,
+      science: `Synchronised movement aligns heart rate and breathing across a group, reduces the neural distinction between self and other, and increases willingness to cooperate, even between strangers.`,
+      chemicals: ['endorphins']
+    }
+  ];
+
+  const svg = document.getElementById('lines');
+  const actLayer = document.getElementById('activities');
+  const cx = 380, cy = 380;
+  const INNER_R = 0.30; // inner circle: the edge of the light
+  const OUTER_R = 0.38; // outer circle: the darkness beyond
+  const actR = 0.195;   // the activities sit inside the inner circle
+
+  function ring(r, cls) {
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy);
+    c.setAttribute('r', 760 * r); c.setAttribute('class', 'ring ' + cls);
+    svg.appendChild(c);
+  }
+  ring(OUTER_R, 'outer');
+  ring(INNER_R, 'inner');
+
+  // science panel wiring
+  const panel = document.getElementById('sci-panel');
+  const scrim = document.getElementById('sci-scrim');
+  const titleEl = document.getElementById('sci-title');
+  const bodyEl = document.getElementById('sci-body');
+
+  function chipHTML(name) {
+    const label = name.charAt(0).toUpperCase() + name.slice(1);
+    return '<button class="chem-chip" data-chem="' + name + '" style="display:inline-flex;align-items:center;font-size:var(--fs-small);padding:4px 11px;border-radius:3px;background:var(--bg-soft);color:var(--ink);border:0.5px solid var(--line);">' + label + '</button>';
+  }
+  /* CHEM (all eight, keyed by lowercase name) comes from the shared source,
+     chem-data.js; the fire panel only references its four */
+  const chemModal = document.getElementById('chem-modal');
+  function openChem(name) {
+    const d = CHEM[name.toLowerCase()]; if (!d) return;
+    document.getElementById('cm-name').textContent = d.name;
+    document.getElementById('cm-meta').textContent = d.kind + ', produced in ' + d.produced;
+    document.getElementById('cm-sum').textContent = d.summary;
+    document.getElementById('cm-does').innerHTML = d.does.map(x => '<li>' + x + '</li>').join('');
+    document.getElementById('cm-trig').innerHTML = d.triggers.map(x => '<li>' + x + '</li>').join('');
+    chemModal.classList.add('is-open');
+  }
+  function closeChem() { chemModal.classList.remove('is-open'); }
+  bodyEl.addEventListener('click', e => { const c = e.target.closest('.chem-chip'); if (c) openChem(c.dataset.chem); });
+  document.getElementById('chem-close').addEventListener('click', closeChem);
+  chemModal.addEventListener('click', e => { if (e.target === chemModal) closeChem(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChem(); });
+
+  function openScience(act) {
+    titleEl.textContent = act.title;
+    const wall = act.wall
+      ? act.wall.trim().split(/\n\n+/).map(p => '<p>' + p.trim() + '</p>').join('')
+      : '';
+    const chips = (act.chemicals && act.chemicals.length)
+      ? '<div class="sci-chips">' + act.chemicals.map(chipHTML).join('') + '</div>'
+      : '';
+    const deep = (act.science || chips)
+      ? '<details class="sci-deep"><summary>The science</summary>' +
+        (act.science ? act.science.trim().split(/\n\n+/).map(p => '<p>' + p.trim() + '</p>').join('') : '') +
+        chips + '</details>'
+      : '';
+    bodyEl.innerHTML = wall + deep;
+    panel.classList.add('is-open');
+    scrim.classList.add('is-open');
+    panel.setAttribute('aria-hidden', 'false');
+  }
+  function closeScience() {
+    panel.classList.remove('is-open');
+    scrim.classList.remove('is-open');
+    panel.setAttribute('aria-hidden', 'true');
+  }
+  document.getElementById('sci-close').addEventListener('click', closeScience);
+  scrim.addEventListener('click', closeScience);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeScience(); });
+
+  // the centre itself opens, holding the flame and the warmth together
+  const FIRE = {
+    title: 'The flame',
+    wall: `In ancient Rome, the word for fireplace was focus, the first building block of the home, around which all the rest is organised. People sitting around the same flame focus together on the same point, which lowers stress and lets the body settle. Breath slows, the nervous system shifts toward calm, and the group falls into the same quiet rhythm. A contained flame has been read by the body as a signal of safety for as long as humans have known how to make one. Gathering around it together is one of the simplest ways we have ever found to belong.`,
+    science: `Watching a fire lowers blood pressure, with the effect increasing the longer the exposure. A flame is a textbook case of soft fascination, a stimulus that holds attention with minimal effort, which allows directed attention to recover and the body to shift toward rest. Physical warmth itself lowers blood pressure and reduces sympathetic arousal, and regular sauna use is associated with lower blood pressure, reduced inflammation, and lower cardiovascular mortality.`,
+    chemicals: ['gaba']
+  };
+  document.getElementById('centre').addEventListener('click', () => openScience(FIRE));
+
+  // place the activities: a dark grey disc gathered around the fire, a line
+  // out to its title sitting outside the circle. Click either to open the text.
+  const NS = 'http://www.w3.org/2000/svg';
+  const NODE_R = 0.19;   // discs sit inside the circle, like people around the fire
+  const NODE_PX = 14;    // disc radius in the 760 viewBox
+  const LINE_END_R = 0.46; // the leader line stops here, before the title
+  const SIDE_R = 0.48;   // side titles anchor their near edge here
+  const TB_R = 0.56;     // top/bottom titles centre here
+
+  ACTIVITIES.forEach((act, i) => {
+    const ang = (-90 + i * (360 / ACTIVITIES.length)) * Math.PI / 180;
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    const open = (act.wall || act.science) ? () => openScience(act) : null;
+
+    // which side of the circle the title sits on, so the line stops short of it
+    const posClass = ca > 0.5 ? 'pos-right'
+                   : ca < -0.5 ? 'pos-left'
+                   : sa < 0 ? 'pos-top' : 'pos-bottom';
+    const side = posClass === 'pos-right' || posClass === 'pos-left';
+    const labelR = side ? SIDE_R : TB_R;
+
+    // leader line from just outside the disc to just short of the title
+    const line = document.createElementNS(NS, 'line');
+    line.setAttribute('x1', cx + ca * (760 * NODE_R + NODE_PX));
+    line.setAttribute('y1', cy + sa * (760 * NODE_R + NODE_PX));
+    line.setAttribute('x2', cx + ca * 760 * LINE_END_R);
+    line.setAttribute('y2', cy + sa * 760 * LINE_END_R);
+    line.setAttribute('class', 'lead-line');
+    line.style.animationDelay = (0.5 + i * 0.1) + 's';
+    svg.appendChild(line);
+
+    // the dark grey disc around the fire
+    const node = document.createElementNS(NS, 'circle');
+    node.setAttribute('cx', cx + ca * 760 * NODE_R);
+    node.setAttribute('cy', cy + sa * 760 * NODE_R);
+    node.setAttribute('r', NODE_PX);
+    node.setAttribute('class', 'node');
+    node.style.animationDelay = (0.55 + i * 0.1) + 's';
+    if (open) {
+      node.setAttribute('role', 'button');
+      node.setAttribute('tabindex', '0');
+      node.setAttribute('aria-label', act.title);
+      node.addEventListener('click', open);
+      node.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+    }
+    svg.appendChild(node);
+
+    // the title, outside the circles
+    const el = document.createElement(open ? 'button' : 'div');
+    el.className = 'activity ' + posClass + (open ? ' activity--link' : '');
+    el.style.left = (50 + ca * labelR * 100) + '%';
+    el.style.top = (50 + sa * labelR * 100) + '%';
+    el.style.animationDelay = (0.6 + i * 0.1) + 's';
+    el.innerHTML = act.label.replace(/\n/g, '<br>');
+    if (open) {
+      el.type = 'button';
+      el.style.background = 'none';
+      el.style.border = 'none';
+      el.addEventListener('click', open);
+    }
+    actLayer.appendChild(el);
+  });
+
+  // ---- living flame glow at centre (unchanged from the original) ----
+  const cv = document.getElementById('flame');
+  const fctx = cv.getContext('2d');
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  function sizeCanvas() {
+    const rect = cv.getBoundingClientRect();
+    cv.width = rect.width * DPR;
+    cv.height = rect.height * DPR;
+  }
+  sizeCanvas();
+  window.addEventListener('resize', sizeCanvas);
+
+  function draw() {
+    const t = Date.now() / 1000;
+    const w = cv.width, h = cv.height;
+    const mx = w / 2, my = h / 2;
+    const unit = Math.min(w, h);
+    fctx.clearRect(0, 0, w, h);
+    const flicker = 1 + Math.sin(t * 3.1) * 0.04 + Math.sin(t * 7.7) * 0.02;
+    const breathe = 1 + Math.sin(t * 0.7) * 0.06;
+    const baseR = unit * 0.30 * breathe * flicker;
+
+    let g = fctx.createRadialGradient(mx, my, 0, mx, my, baseR);
+    g.addColorStop(0, 'rgba(214,140,70,0.34)');
+    g.addColorStop(0.45, 'rgba(194,113,58,0.22)');
+    g.addColorStop(0.75, 'rgba(181,121,31,0.10)');
+    g.addColorStop(1, 'rgba(181,121,31,0)');
+    fctx.beginPath(); fctx.arc(mx, my, baseR, 0, Math.PI * 2);
+    fctx.fillStyle = g; fctx.fill();
+
+    let c = fctx.createRadialGradient(mx, my, 0, mx, my, baseR * 0.28);
+    c.addColorStop(0, 'rgba(231,160,72,0.45)');
+    c.addColorStop(1, 'rgba(214,140,70,0)');
+    fctx.beginPath(); fctx.arc(mx, my, baseR * 0.28, 0, Math.PI * 2);
+    fctx.fillStyle = c; fctx.fill();
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+  })();
+  </script>
+
+  <script src="path.js"></script>
+</body>
+</html>

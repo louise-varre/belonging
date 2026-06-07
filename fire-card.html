@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Around the fire · 4:5 card</title>
+<link rel="stylesheet" href="shell.css">
+<style>
+  /* A 4:5 (1080×1350) Instagram frame holding exactly the fire wheel:
+     the rings, the living flame, the six discs and their titles. Nothing else.
+     Positions and styling are copied verbatim from fire.html. */
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    /* the warm firelight pooled on the off-white, centred on the flame */
+    background: radial-gradient(120% 120% at 50% 50%, #FCF4E6 0%, var(--bg) 52%, var(--bg-soft) 100%);
+  }
+
+  .card {
+    width: 1080px;
+    height: 1350px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .stage {
+    position: relative;
+    width: 720px;
+    height: 720px;
+    flex: none;
+  }
+
+  .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; overflow: visible; }
+  /* the flame glow as a pure CSS background, so it is baked into the page and
+     survives any download / screenshot / print (a <canvas> would not).
+     Reproduces the two radial layers from fire.html: a soft outer pool at 30%
+     of the stage, and a brighter core at ~8.4%. */
+  .flame {
+    position: absolute; inset: 0; z-index: 1;
+    background:
+      radial-gradient(8.4% 8.4% at 50% 50%,
+        rgba(231,160,72,0.45) 0%, rgba(214,140,70,0) 100%),
+      radial-gradient(30% 30% at 50% 50%,
+        rgba(214,140,70,0.34) 0%, rgba(194,113,58,0.22) 45%,
+        rgba(181,121,31,0.10) 75%, rgba(181,121,31,0) 100%);
+  }
+
+  /* still export: everything in its final, settled state (no fade-in) */
+  .ring {
+    fill: none;
+    opacity: 0.8;
+    vector-effect: non-scaling-stroke;
+  }
+  .ring.inner { stroke: var(--ember); stroke-width: 2; }
+  .ring.outer { stroke: var(--ink-faint); stroke-width: 1.5; }
+
+  .lead-line {
+    stroke: var(--ink-faint);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.8;
+  }
+  .node {
+    fill: var(--ink-soft);
+    opacity: 0.95;
+  }
+
+  .activity {
+    position: absolute;
+    z-index: 4;
+    text-align: center;
+    font-family: var(--body);
+    font-size: 15px;
+    letter-spacing: var(--track-caps);
+    text-transform: uppercase;
+    line-height: 1.5;
+    color: var(--ink);
+    white-space: nowrap;
+    opacity: 1;
+  }
+  .activity { font-size: 21px; }
+  .activity.pos-top, .activity.pos-bottom { transform: translate(-50%, -50%); }
+  .activity.pos-right { transform: translate(0, -50%); text-align: left; }
+  .activity.pos-left  { transform: translate(-100%, -50%); text-align: right; }
+
+  .centre {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 5;
+  }
+  .centre .word {
+    font-size: 18px;
+    letter-spacing: var(--track-caps);
+    text-transform: uppercase;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="stage">
+      <svg id="lines" viewBox="0 0 760 760" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="flame"></div>
+      <div class="centre"><span class="word">Flame &amp; warmth</span></div>
+      <div id="activities"></div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+  /* same six activities, same order (from the top, clockwise) as fire.html */
+  const ACTIVITIES = [
+    { label: 'Singing &\nhumming' },
+    { label: 'Storytelling' },
+    { label: 'Shared meals' },
+    { label: 'Gentle touch &\nproximity' },
+    { label: 'Laughter' },
+    { label: 'Rhythmic\nmovement' }
+  ];
+
+  const svg = document.getElementById('lines');
+  const actLayer = document.getElementById('activities');
+  const cx = 380, cy = 380;
+  const INNER_R = 0.30, OUTER_R = 0.38;
+  const NS = 'http://www.w3.org/2000/svg';
+
+  function ring(r, cls) {
+    const c = document.createElementNS(NS, 'circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy);
+    c.setAttribute('r', 760 * r); c.setAttribute('class', 'ring ' + cls);
+    svg.appendChild(c);
+  }
+  ring(OUTER_R, 'outer');
+  ring(INNER_R, 'inner');
+
+  const NODE_R = 0.19, NODE_PX = 16, LINE_END_R = 0.46, SIDE_R = 0.48, TB_R = 0.56;
+
+  ACTIVITIES.forEach((act, i) => {
+    const ang = (-90 + i * (360 / ACTIVITIES.length)) * Math.PI / 180;
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+
+    const posClass = ca > 0.5 ? 'pos-right'
+                   : ca < -0.5 ? 'pos-left'
+                   : sa < 0 ? 'pos-top' : 'pos-bottom';
+    const side = posClass === 'pos-right' || posClass === 'pos-left';
+    const labelR = side ? SIDE_R : TB_R;
+
+    const line = document.createElementNS(NS, 'line');
+    line.setAttribute('x1', cx + ca * (760 * NODE_R + NODE_PX));
+    line.setAttribute('y1', cy + sa * (760 * NODE_R + NODE_PX));
+    line.setAttribute('x2', cx + ca * 760 * LINE_END_R);
+    line.setAttribute('y2', cy + sa * 760 * LINE_END_R);
+    line.setAttribute('class', 'lead-line');
+    line.style.animationDelay = (0.5 + i * 0.1) + 's';
+    svg.appendChild(line);
+
+    const node = document.createElementNS(NS, 'circle');
+    node.setAttribute('cx', cx + ca * 760 * NODE_R);
+    node.setAttribute('cy', cy + sa * 760 * NODE_R);
+    node.setAttribute('r', NODE_PX);
+    node.setAttribute('class', 'node');
+    node.style.animationDelay = (0.55 + i * 0.1) + 's';
+    svg.appendChild(node);
+
+    const el = document.createElement('div');
+    el.className = 'activity ' + posClass;
+    el.style.left = (50 + ca * labelR * 100) + '%';
+    el.style.top = (50 + sa * labelR * 100) + '%';
+    el.style.animationDelay = (0.6 + i * 0.1) + 's';
+    el.innerHTML = act.label.replace(/\n/g, '<br>');
+    actLayer.appendChild(el);
+  });
+  })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The circle · I belong</title>
+<link rel="stylesheet" href="shell.css">
+<style>
+  /* the same warm firelight pools on the off-white as on the fire step */
+  body[data-step="circle"] {
+    background: radial-gradient(120% 120% at 50% 46%, #FCF4E6 0%, var(--bg) 52%, var(--bg-soft) 100%);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .step--circle {
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(0.4rem, 1.6vh, 1.2rem);
+    padding: 3.4rem 1rem 6.5rem;
+  }
+
+  /* keep the foot links clickable above the slider artwork */
+  .step-foot { z-index: 40; }
+
+  .tabs { display: flex; gap: 0; flex-shrink: 0; }
+  .tab-btn {
+    font-family: var(--body);
+    font-size: var(--fs-label);
+    font-weight: 500;
+    letter-spacing: var(--track-caps);
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    background: none;
+    border: none;
+    padding: 8px 24px;
+    cursor: pointer;
+    border-bottom: 1.5px solid transparent;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .tab-btn:hover { color: var(--ink-soft); }
+  .tab-btn.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+  .view { display: none; flex-direction: column; align-items: center; }
+  .view.active { display: flex; }
+
+  .canvas-wrap {
+    position: relative;
+    width: min(70vh, 88vw, 760px);
+    height: min(70vh, 88vw, 760px);
+    flex: none;
+  }
+  canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+  .sound-btn {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 6px;
+    cursor: pointer;
+    color: var(--ink-faint);
+    transition: color 0.3s;
+  }
+  .sound-btn:hover { color: var(--ink-soft); }
+  .sound-btn.active { color: var(--ember); }
+  .sound-btn.active .sound-off-line { display: none; }
+
+  .slider-area {
+    padding-bottom: 6px;
+    width: min(60vh, 80vw, 700px);
+    position: relative;
+  }
+  .slider-labels { display: flex; justify-content: space-between; margin-bottom: 14px; }
+  .slider-label {
+    font-family: var(--body);
+    font-size: var(--fs-label);
+    font-weight: 400;
+    letter-spacing: var(--track-caps);
+    text-transform: uppercase;
+  }
+  .slider-label-left { color: var(--ink-soft); }
+  .slider-label-right { color: var(--ember); }
+
+  .track {
+    position: relative;
+    height: 3px;
+    background: linear-gradient(to right, var(--ink-soft), var(--ink-faint) 45%, var(--ink-faint) 55%, var(--ember));
+    border-radius: 2px;
+  }
+  .track input[type=range] {
+    position: absolute;
+    width: 100%;
+    top: -18px;
+    height: 38px;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+    touch-action: none;
+    margin: 0;
+  }
+  .track-thumb {
+    position: absolute;
+    width: 18px;
+    height: 15px;
+    background: var(--ink-soft);
+    top: 6px;
+    transform: translateX(-50%);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    pointer-events: none;
+    transition: background 0.4s ease;
+  }
+  .focus-label {
+    position: absolute;
+    top: 56px;
+    transform: translateX(-50%);
+    font-family: var(--body);
+    font-size: var(--fs-label);
+    font-weight: 500;
+    letter-spacing: var(--track-caps);
+    text-transform: uppercase;
+    color: var(--ink);
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    .tab-btn { padding: 6px 14px; }
+    .canvas-wrap { width: 82vw; height: 82vw; max-width: 420px; max-height: 420px; }
+    .slider-area { width: 86vw; max-width: 420px; }
+    .focus-label { top: 60px; }
+    .track-thumb { width: 22px; height: 18px; top: 7px; }
+  }
+</style>
+</head>
+<body data-step="circle">
+
+  <button class="jump-open" id="jump-open">Contents</button>
+
+  <main class="step step--circle">
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-solo" type="button">Individual</button>
+      <button class="tab-btn" id="tab-group" type="button">Collective</button>
+    </div>
+
+    <div class="view active" id="view-solo">
+      <div class="canvas-wrap">
+        <canvas id="c1" width="3000" height="3000"></canvas>
+      </div>
+      <div class="sound-btn" id="sound-btn-1">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+          <line class="sound-off-line" x1="23" y1="1" x2="1" y2="23" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="slider-area">
+        <div class="slider-labels">
+          <span class="slider-label slider-label-left">Outside my control</span>
+          <span class="slider-label slider-label-right">Within my control</span>
+        </div>
+        <div class="track">
+          <input type="range" min="0" max="100" value="25" id="slider1">
+          <div class="track-thumb" id="thumb1"></div>
+        </div>
+        <div class="focus-label" id="focus1" style="left:25%;">Focus</div>
+      </div>
+    </div>
+
+    <div class="view" id="view-group">
+      <div class="canvas-wrap">
+        <canvas id="c2" width="1800" height="1800"></canvas>
+      </div>
+      <div class="sound-btn" id="sound-btn-2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+          <line class="sound-off-line" x1="23" y1="1" x2="1" y2="23" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="slider-area">
+        <div class="slider-labels">
+          <span class="slider-label slider-label-left">Outside my control</span>
+          <span class="slider-label slider-label-right">Within my control</span>
+        </div>
+        <div class="track">
+          <input type="range" min="0" max="100" value="25" id="slider2">
+          <div class="track-thumb" id="thumb2"></div>
+        </div>
+        <div class="focus-label" id="focus2" style="left:25%;">Focus</div>
+      </div>
+    </div>
+
+  </main>
+
+  <nav class="jump-panel" id="jump-panel">
+    <button class="jump-panel__close">Close</button>
+    <ul class="jump-list"></ul>
+  </nav>
+
+  <footer class="step-foot" id="path-foot"></footer>
+
+  <script>
+  /* Ported from the-circle.html. The mechanism is unchanged: a slider from
+     "outside my control" (cold, scattered) to "within my control" (warm, gathered),
+     with an individual and a collective view, and optional firelight sound.
+     The palette is recoloured for the warm off-white background: amber stays,
+     the cold end is quiet taupe ink rather than blue, and the collective view
+     uses multiply blending so the warmth reads on a light ground. */
+  (function () {
+
+  let currentTab = 'solo';
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-' + tab).classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+  document.getElementById('tab-solo').addEventListener('click', () => switchTab('solo'));
+  document.getElementById('tab-group').addEventListener('click', () => switchTab('group'));
+
+  const W = 1800, H = 1800;
+  const isMobile = window.innerWidth <= 640;
+  const mLW = isMobile ? 2 : 1;
+
+  // ---- a scattered fragment, the cold "outside my control" matter ----
+  class Fragment {
+    constructor() { this.reset(); }
+    reset() {
+      this.angle = Math.random() * Math.PI * 2;
+      this.distRatio = Math.random();
+      this.rot = Math.random() * Math.PI * 2;
+      this.rotSpeed = (Math.random() - 0.5) * 0.025;
+      this.orbitSpeed = (Math.random() - 0.5) * 0.003;
+      this.baseAlpha = 0.3 + Math.random() * 0.45;
+      const t = Math.random();
+      if (t < 0.22) { this.type = 'shard'; this.size = 38 + Math.random() * 66; }
+      else if (t < 0.38) { this.type = 'dash'; this.size = 54 + Math.random() * 98; }
+      else if (t < 0.52) { this.type = 'angle'; this.size = 32 + Math.random() * 54; }
+      else if (t < 0.66) { this.type = 'cross'; this.size = 22 + Math.random() * 40; }
+      else if (t < 0.82) { this.type = 'line'; this.size = 27 + Math.random() * 62; }
+      else { this.type = 'rect'; this.size = 19 + Math.random() * 42; this.aspect = 0.15 + Math.random() * 0.4; }
+      // quiet taupe inks, darker than the off-white so the shards read
+      const v = Math.random();
+      if (v < 0.45) this.color = [120 + Math.random()*28, 116 + Math.random()*26, 108 + Math.random()*24];
+      else if (v < 0.75) this.color = [96 + Math.random()*22, 92 + Math.random()*20, 85 + Math.random()*18];
+      else this.color = [148 + Math.random()*22, 142 + Math.random()*20, 132 + Math.random()*18];
+    }
+    updateAt(cx, cy, outerR, innerR, intensity) {
+      this.angle += this.orbitSpeed * (0.4 + intensity * 2.2);
+      this.rot += this.rotSpeed * (0.4 + intensity * 1.8);
+      const gap = outerR - innerR;
+      const dist = innerR + 4 + this.distRatio * Math.max(0, gap - 8);
+      this.x = cx + Math.cos(this.angle) * dist;
+      this.y = cy + Math.sin(this.angle) * dist;
+      this.currentGap = gap;
+    }
+    drawOn(ctx, intensity, mul = 1) {
+      const squeeze = Math.max(0.05, this.currentGap / 80);
+      const presence = 0.3 + intensity * 0.7;
+      const alpha = this.baseAlpha * presence * Math.min(1, squeeze * 1.5);
+      if (alpha < 0.015) return;
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rot);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = ctx.strokeStyle = `rgb(${this.color[0]},${this.color[1]},${this.color[2]})`;
+      const sizeScale = 0.4 + intensity * 1.2;
+      // keep each piece inside the ring gap so it reads as a whole shape orbiting
+      // the inner circle, rather than an oversized fragment clipped to a sliver
+      let s = this.size * Math.min(1, squeeze) * sizeScale * mul;
+      s = Math.min(s, this.currentGap * 0.9);
+      const lw = (1.5 + intensity * 1.5) * Math.max(0.6, mul);
+      switch (this.type) {
+        case 'shard': ctx.beginPath(); ctx.moveTo(0,-s/2); ctx.lineTo(s*0.15,s/2); ctx.lineTo(-s*0.08,s*0.3); ctx.closePath(); ctx.fill(); break;
+        case 'dash': ctx.lineWidth=lw; ctx.beginPath(); ctx.moveTo(-s/2,0); ctx.lineTo(s/2,0); ctx.stroke(); break;
+        case 'angle': ctx.lineWidth=lw+0.5; ctx.beginPath(); ctx.moveTo(-s/2,-s/3); ctx.lineTo(0,0); ctx.lineTo(-s/2,s/3); ctx.stroke(); break;
+        case 'cross': ctx.lineWidth=lw; ctx.beginPath(); ctx.moveTo(-s/2,0); ctx.lineTo(s/2,0); ctx.moveTo(0,-s/2); ctx.lineTo(0,s/2); ctx.stroke(); break;
+        case 'line': ctx.fillRect(-s/2,-lw/2,s,lw); break;
+        case 'rect': ctx.fillRect(-s/2,-s*this.aspect/2,s,s*this.aspect); break;
+      }
+      ctx.restore();
+    }
+  }
+
+  // ---- a warm mote, the gathered "within my control" warmth ----
+  class WarmMote {
+    constructor() { this.reset(); }
+    reset() {
+      this.angle = Math.random() * Math.PI * 2;
+      this.distRatio = Math.random() * 0.85;
+      this.driftAngle = Math.random() * Math.PI * 2;
+      this.driftSpeed = 0.002 + Math.random() * 0.004;
+      this.driftRadius = 5 + Math.random() * 20;
+      this.baseAlpha = 0.25 + Math.random() * 0.4;
+      this.size = 12 + Math.random() * 35;
+      this.pulseSpeed = 0.5 + Math.random() * 1.5;
+      this.pulsePhase = Math.random() * Math.PI * 2;
+      const v = Math.random();
+      if (v < 0.4) this.color = [214 + Math.random()*20, 150 + Math.random()*28, 78 + Math.random()*26];
+      else if (v < 0.7) this.color = [196 + Math.random()*22, 132 + Math.random()*22, 64 + Math.random()*18];
+      else this.color = [228 + Math.random()*12, 178 + Math.random()*18, 104 + Math.random()*26];
+    }
+    drawIn(ctx, cx, cy, innerR, warmth) {
+      if (innerR < 15 || warmth < 0.05) return;
+      const time = Date.now() / 1000;
+      this.driftAngle += this.driftSpeed;
+      const dist = this.distRatio * (innerR - this.size * 0.5);
+      const dx = Math.cos(this.angle + Math.sin(this.driftAngle) * 0.3) * dist;
+      const dy = Math.sin(this.angle + Math.cos(this.driftAngle * 0.7) * 0.3) * dist;
+      const x = cx + dx;
+      const y = cy + dy;
+      const pulse = 0.7 + Math.sin(time * this.pulseSpeed + this.pulsePhase) * 0.3;
+      const s = this.size * pulse * Math.min(1, innerR / 80);
+      const alpha = this.baseAlpha * warmth * pulse;
+      if (alpha < 0.01 || s < 2) return;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, s);
+      grad.addColorStop(0, `rgba(${this.color[0]},${this.color[1]},${this.color[2]},0.8)`);
+      grad.addColorStop(0.5, `rgba(${this.color[0]},${this.color[1]},${this.color[2]},0.3)`);
+      grad.addColorStop(1, `rgba(${this.color[0]},${this.color[1]},${this.color[2]},0)`);
+      ctx.beginPath();
+      ctx.arc(x, y, s, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // ============ INDIVIDUAL VIEW ============
+  const c1 = document.getElementById('c1').getContext('2d');
+  const slider1 = document.getElementById('slider1');
+  const thumb1 = document.getElementById('thumb1');
+  const focus1 = document.getElementById('focus1');
+  const CX = 1500, CY = 1500;
+  const OUTER_R = 800, MIN_INNER = 42, MAX_INNER = OUTER_R - 4;
+
+  let val1 = 25, target1 = 25;
+  const frags1 = []; for (let i = 0; i < 95; i++) frags1.push(new Fragment());
+  const motes1 = []; for (let i = 0; i < 70; i++) motes1.push(new WarmMote());
+
+  function drawSoloFrame() {
+    val1 += (target1 - val1) * 0.05;
+    const warmth = val1 / 100, coldness = 1 - warmth;
+    const innerR = MIN_INNER + warmth * (MAX_INNER - MIN_INNER);
+    c1.clearRect(0, 0, 3000, 3000);
+
+    const ratio = innerR / OUTER_R;
+    if (ratio >= 0.25) {
+      const int = (ratio - 0.25) / 0.75;
+
+      if (int > 0.3) {
+        const glowInt = (int - 0.3) / 0.7;
+        // soft golden light shining out past the outer circle, growing as the inner circle
+        // fills; the grey rings on the water ride on top of this warm spill (no red)
+        const bd = OUTER_R + 580 * glowInt;
+        const grad = c1.createRadialGradient(CX, CY, OUTER_R - 10, CX, CY, bd);
+        grad.addColorStop(0, `rgba(252,214,140,${glowInt*0.3})`);
+        grad.addColorStop(0.3, `rgba(244,196,112,${glowInt*0.16})`);
+        grad.addColorStop(0.6, `rgba(232,176,90,${glowInt*0.06})`);
+        grad.addColorStop(1, 'rgba(224,166,84,0)');
+        c1.beginPath(); c1.arc(CX,CY,bd,0,Math.PI*2); c1.fillStyle=grad; c1.fill();
+      }
+
+      const time = Date.now()/1000;
+      const numRipples = Math.ceil(int * 20);
+      const maxReach = 90 + int * 550;
+      for (let i = 1; i <= numRipples; i++) {
+        const cycle = (time * 0.14 + i * 0.45) % 8;
+        const rr = OUTER_R + 4 + cycle * (maxReach / 8);
+        const fade = 1 - cycle / 8;
+        const distFade = 1 - ((rr - OUTER_R) / maxReach);
+        const a = int * int * fade * fade * distFade * distFade * 0.78;
+        if (a < 0.003 || rr > OUTER_R + maxReach) continue;
+        c1.beginPath(); c1.arc(CX,CY,rr,0,Math.PI*2);
+        // the rings on the water: a quiet grey, not reddish
+        c1.strokeStyle = `rgba(118,112,103,${a})`;
+        c1.lineWidth = (0.6 + fade * 1.4) * (distFade + 0.2);
+        c1.stroke();
+      }
+    }
+
+    // Darker pool inside the outer circle: a deep warm brown (not black) that fades to
+    // transparent toward the centre. It is deepest when the inner circle is small (focus
+    // outside my control) and lightens as the inner circle fills out and its light shines
+    // outward. Fragments and the central glow sit on top of this.
+    const darkA = coldness;
+    const dg = c1.createRadialGradient(CX, CY, innerR * 0.7, CX, CY, OUTER_R);
+    dg.addColorStop(0, 'rgba(58,49,40,0)');
+    dg.addColorStop(0.45, `rgba(54,45,36,${0.4 * darkA})`);
+    dg.addColorStop(1, `rgba(48,40,32,${0.62 * darkA})`);
+    c1.beginPath();c1.arc(CX,CY,OUTER_R,0,Math.PI*2);c1.fillStyle=dg;c1.fill();
+
+    // Outer ring - "what I cannot affect": a quiet taupe rim
+    const ringR = Math.round(122 - coldness * 44);
+    const ringG = Math.round(115 - coldness * 42);
+    const ringB = Math.round(106 - coldness * 38);
+    const ringAlpha = 0.5 + coldness * 0.42;
+    const ringWidth = (2 + coldness * 2) * mLW;
+    c1.beginPath();c1.arc(CX,CY,OUTER_R,0,Math.PI*2);c1.strokeStyle=`rgba(${ringR},${ringG},${ringB},${ringAlpha})`;c1.lineWidth=ringWidth;c1.stroke();
+
+    c1.save();
+    c1.beginPath();
+    c1.arc(CX,CY,OUTER_R,0,Math.PI*2);
+    c1.arc(CX,CY,innerR,0,Math.PI*2,true);
+    c1.clip();
+    frags1.forEach(f=>{f.updateAt(CX,CY,OUTER_R,innerR,coldness);f.drawOn(c1,coldness);});
+    c1.restore();
+
+    const g1=c1.createRadialGradient(CX,CY,0,CX,CY,innerR);const a=0.22+warmth*0.45;
+    g1.addColorStop(0,`rgba(255,226,150,${Math.min(1,a+0.22)})`);g1.addColorStop(0.25,`rgba(246,200,112,${a})`);g1.addColorStop(0.6,`rgba(230,172,82,${a*0.55})`);g1.addColorStop(1,`rgba(216,154,66,${a*0.14})`);
+    c1.beginPath();c1.arc(CX,CY,innerR,0,Math.PI*2);c1.fillStyle=g1;c1.fill();
+
+    c1.save();
+    c1.beginPath();
+    c1.arc(CX, CY, innerR, 0, Math.PI * 2);
+    c1.clip();
+    const moteCount = Math.floor(warmth * warmth * motes1.length);
+    for (let i = 0; i < moteCount; i++) motes1[i].drawIn(c1, CX, CY, innerR, warmth);
+    c1.restore();
+
+    const breathe=Math.sin(Date.now()/2600)*0.04+1,coreR=innerR*0.3*breathe;
+    const cg=c1.createRadialGradient(CX,CY,0,CX,CY,coreR);cg.addColorStop(0,`rgba(255,232,160,${warmth*0.5})`);cg.addColorStop(1,'rgba(238,190,110,0)');
+    c1.beginPath();c1.arc(CX,CY,coreR,0,Math.PI*2);c1.fillStyle=cg;c1.fill();
+
+    c1.beginPath();c1.arc(CX,CY,innerR,0,Math.PI*2);c1.strokeStyle=`rgba(224,166,88,${0.55+warmth*0.35})`;c1.lineWidth=2.5*mLW;c1.stroke();
+
+    thumb1.style.left=val1+'%';focus1.style.left=val1+'%';
+    thumb1.style.background=warmth>0.6?'#B4633C':warmth<0.4?'#6E665C':'#8A6B4A';
+  }
+
+  slider1.addEventListener('input',()=>{
+    target1=parseInt(slider1.value);
+    lastSliderMove = Date.now();
+    if (soundEnabled) startAudio();
+  });
+  slider1.addEventListener('touchstart', () => { if (soundEnabled) startAudio(); }, { passive: true });
+
+  // ============ COLLECTIVE VIEW ============
+  const c2 = document.getElementById('c2').getContext('2d');
+  const slider2 = document.getElementById('slider2');
+  const thumb2 = document.getElementById('thumb2');
+  const focus2 = document.getElementById('focus2');
+
+  let val2 = 25, target2 = 25;
+
+  const NUM_PEOPLE = 18;
+  const people = [];
+  const centerGX = 900, centerGY = 900;
+  // arranged as a circular cluster (centre + an inner ring of 6 + an outer ring of 11)
+  // so the gathered, "within my control" state reads as a circle, not a grid.
+  // Centred in the larger 1800x1800 frame so the rings on the water have room to spread
+  // past the outer circles without being clipped at the canvas edge.
+  const basePositions = [
+    [900, 900],
+    [900, 710], [1065, 805], [1065, 995], [900, 1090], [735, 995], [735, 805],
+    [900, 520], [1105, 580], [1245, 742], [1276, 954], [1187, 1149], [1007, 1264], [793, 1264], [613, 1149], [524, 954], [555, 742], [695, 580]
+  ];
+  for (let i = 0; i < NUM_PEOPLE; i++) {
+    const bx = basePositions[i][0] + (Math.random() - 0.5) * 20;
+    const by = basePositions[i][1] + (Math.random() - 0.5) * 20;
+    const dx = bx - centerGX;
+    const dy = by - centerGY;
+    const r = 85 + Math.random() * 18;
+    const p = {
+      outerR: r,
+      baseX: bx, baseY: by,
+      scatteredX: bx + dx * 0.6,
+      scatteredY: by + dy * 0.6,
+      cx: bx, cy: by,
+      frags: []
+    };
+    for (let j = 0; j < 12; j++) p.frags.push(new Fragment());
+    p.motes = []; for (let j = 0; j < 12; j++) p.motes.push(new WarmMote());
+    people.push(p);
+  }
+
+  function drawGroupFrame() {
+    val2 += (target2 - val2) * 0.05;
+    const warmth = val2 / 100;
+    const coldness = 1 - warmth;
+
+    c2.clearRect(0, 0, W, H);
+
+    people.forEach(p => {
+      const targetX = warmth * p.baseX + (1 - warmth) * p.scatteredX;
+      const targetY = warmth * p.baseY + (1 - warmth) * p.scatteredY;
+      p.cx += (targetX - p.cx) * 0.09;
+      p.cy += (targetY - p.cy) * 0.09;
+    });
+
+    // First pass: warm glow. Multiply so overlaps deepen on the light ground.
+    c2.save();
+    c2.globalCompositeOperation = 'multiply';
+    people.forEach(p => {
+      const innerR = 10 + warmth * (p.outerR - 14);
+      const glowExtend = 1.3 + warmth * 0.5;
+      const g = c2.createRadialGradient(p.cx, p.cy, 0, p.cx, p.cy, innerR * glowExtend);
+      const a = 0.1 + warmth * 0.30;
+      g.addColorStop(0, `rgba(242,196,118,${a + 0.1})`);
+      g.addColorStop(0.3, `rgba(234,182,106,${a})`);
+      g.addColorStop(0.65, `rgba(224,168,94,${a * 0.45})`);
+      g.addColorStop(1, 'rgba(216,158,86,0)');
+      c2.beginPath(); c2.arc(p.cx, p.cy, innerR * glowExtend, 0, Math.PI * 2);
+      c2.fillStyle = g; c2.fill();
+
+      c2.save();
+      c2.beginPath();
+      c2.arc(p.cx, p.cy, innerR, 0, Math.PI * 2);
+      c2.clip();
+      const moteCount = Math.floor(warmth * warmth * p.motes.length);
+      for (let i = 0; i < moteCount; i++) p.motes[i].drawIn(c2, p.cx, p.cy, innerR, warmth);
+      c2.restore();
+
+      const breathe = Math.sin(Date.now() / 2600 + p.cx * 0.01) * 0.04 + 1;
+      const coreR = innerR * 0.3 * breathe;
+      const cg = c2.createRadialGradient(p.cx, p.cy, 0, p.cx, p.cy, coreR);
+      cg.addColorStop(0, `rgba(244,196,120,${warmth * 0.22})`);
+      cg.addColorStop(1, 'rgba(224,170,96,0)');
+      c2.beginPath(); c2.arc(p.cx, p.cy, coreR, 0, Math.PI * 2);
+      c2.fillStyle = cg; c2.fill();
+    });
+    c2.restore();
+
+    // Second pass: outer rings, fragments, inner ring strokes
+    people.forEach(p => {
+      const innerR = 10 + warmth * (p.outerR - 14);
+
+      const ringR = Math.round(122 - coldness * 44);
+      const ringG = Math.round(115 - coldness * 42);
+      const ringB = Math.round(106 - coldness * 38);
+      // the outer ring: "what I cannot affect"
+      c2.beginPath(); c2.arc(p.cx, p.cy, p.outerR, 0, Math.PI * 2);
+      c2.strokeStyle = `rgba(${ringR},${ringG},${ringB},${0.42 + coldness * 0.45})`;
+      c2.lineWidth = (1.7 + coldness * 1.5) * mLW; c2.stroke();
+
+      // Darker pool inside the outer circle: a deep warm brown (not black) that fades to
+      // transparent toward the centre. Deepest when the inner circle is small ("outside my
+      // control") and lightens as the inner circle fills and its light shines outward. A touch
+      // lighter than the solo view since 18 circles can overlap when gathered.
+      const darkA = coldness;
+      const dg = c2.createRadialGradient(p.cx, p.cy, innerR * 0.7, p.cx, p.cy, p.outerR);
+      dg.addColorStop(0, 'rgba(58,49,40,0)');
+      dg.addColorStop(0.45, `rgba(54,45,36,${0.28 * darkA})`);
+      dg.addColorStop(1, `rgba(48,40,32,${0.46 * darkA})`);
+      c2.beginPath(); c2.arc(p.cx, p.cy, p.outerR, 0, Math.PI * 2);
+      c2.fillStyle = dg; c2.fill();
+
+      c2.save();
+      c2.beginPath();
+      c2.arc(p.cx, p.cy, p.outerR, 0, Math.PI * 2);
+      c2.arc(p.cx, p.cy, innerR, 0, Math.PI * 2, true);
+      c2.clip();
+      const fragMul = p.outerR / 200;
+      p.frags.forEach(f => { f.updateAt(p.cx, p.cy, p.outerR, innerR, coldness); f.drawOn(c2, coldness, fragMul); });
+      c2.restore();
+
+      // the inner ring: "what I can affect" (grows as you focus on what you can control)
+      c2.beginPath(); c2.arc(p.cx, p.cy, innerR, 0, Math.PI * 2);
+      c2.strokeStyle = `rgba(224,166,88,${0.5 + warmth * 0.4})`;
+      c2.lineWidth = 2 * mLW; c2.stroke();
+    });
+
+    // Third pass: ripples connecting the gathered circles
+    people.forEach(p => {
+      const innerR = 10 + warmth * (p.outerR - 14);
+      const ratio = innerR / p.outerR;
+      if (ratio < 0.45) return;
+
+      const int = (ratio - 0.45) / 0.55;
+      const time = Date.now() / 1000;
+
+      // Warm light shining out past the outer circle, under the grey rings: a soft golden
+      // spill that grows as the inner circle fills (no red), so each person's light reaches
+      // beyond their own circle toward the others.
+      if (int > 0.2) {
+        const glowR = p.outerR + int * 230;
+        const grad = c2.createRadialGradient(p.cx, p.cy, p.outerR - 6, p.cx, p.cy, glowR);
+        grad.addColorStop(0, `rgba(252,214,140,${int * 0.2})`);
+        grad.addColorStop(0.4, `rgba(244,196,112,${int * 0.1})`);
+        grad.addColorStop(1, 'rgba(232,176,90,0)');
+        c2.beginPath(); c2.arc(p.cx, p.cy, glowR, 0, Math.PI * 2);
+        c2.fillStyle = grad; c2.fill();
+      }
+
+      // the "rings on the water": a quiet grey (not red), spreading further as the inner
+      // circle grows so they overlap with neighbours ("we start affecting others too"), and
+      // more present at full focus.
+      const numRipples = Math.ceil(int * 12);
+      const maxReach = 90 + int * 240;
+      for (let i = 1; i <= numRipples; i++) {
+        const cycle = (time * 0.16 + i * 0.5 + p.cx * 0.002) % 8;
+        const rr = p.outerR + 4 + cycle * (maxReach / 8);
+        const fade = 1 - cycle / 8;
+        const distFade = 1 - ((rr - p.outerR) / maxReach);
+        const a = int * int * fade * fade * distFade * distFade * 0.7;
+        if (a < 0.004 || rr > p.outerR + maxReach) continue;
+        c2.beginPath(); c2.arc(p.cx, p.cy, rr, 0, Math.PI * 2);
+        c2.strokeStyle = `rgba(118,112,103,${a})`;
+        c2.lineWidth = (0.6 + fade * 1.4) * (distFade + 0.2) * mLW; c2.stroke();
+      }
+    });
+
+    thumb2.style.left = val2 + '%';
+    focus2.style.left = val2 + '%';
+    thumb2.style.background = warmth > 0.6 ? '#B4633C' : warmth < 0.4 ? '#9A9086' : '#8A8278';
+  }
+
+  slider2.addEventListener('input', () => {
+    target2 = parseInt(slider2.value);
+    lastSliderMove = Date.now();
+    if (soundEnabled) startAudio();
+  });
+  slider2.addEventListener('touchstart', () => { if (soundEnabled) startAudio(); }, { passive: true });
+
+  // ============ AUDIO (unchanged firelight) ============
+  let audioCtx = null;
+  let audioStarted = false;
+  let masterGain = null;
+  let lastSliderMove = 0;
+  let audioFadedOut = true;
+
+  let noiseGain, noiseFilter, noiseFilterHigh;
+  let noise2Gain, noise2Filter;
+  let crackleGain;
+  let dissonantOscs = [], dissonantGains = [], chaoticLfos = [];
+  let warmOsc1, warmOsc2, warmOsc3, warmGain;
+  let breathLfo, breathLfoGain;
+
+  function createNoise(ctx) {
+    const buf = ctx.createBuffer(1, 2 * ctx.sampleRate, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; return s;
+  }
+
+  function createCrackle(ctx) {
+    const buf = ctx.createBuffer(1, 2 * ctx.sampleRate, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() < 0.015 ? (Math.random() * 2 - 1) * 0.8 : 0;
+    const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; return s;
+  }
+
+  function startAudio() {
+    if (audioStarted) {
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return;
+    }
+    audioStarted = true;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0;
+    masterGain.connect(audioCtx.destination);
+
+    const noise = createNoise(audioCtx);
+    noiseFilter = audioCtx.createBiquadFilter(); noiseFilter.type = 'bandpass'; noiseFilter.frequency.value = 2500; noiseFilter.Q.value = 0.7;
+    noiseFilterHigh = audioCtx.createBiquadFilter(); noiseFilterHigh.type = 'highshelf'; noiseFilterHigh.frequency.value = 3000; noiseFilterHigh.gain.value = 8;
+    noiseGain = audioCtx.createGain(); noiseGain.gain.value = 0;
+    noise.connect(noiseFilter); noiseFilter.connect(noiseFilterHigh); noiseFilterHigh.connect(noiseGain); noiseGain.connect(masterGain); noise.start();
+
+    const noise2 = createNoise(audioCtx);
+    noise2Filter = audioCtx.createBiquadFilter(); noise2Filter.type = 'lowpass'; noise2Filter.frequency.value = 200; noise2Filter.Q.value = 3;
+    noise2Gain = audioCtx.createGain(); noise2Gain.gain.value = 0;
+    noise2.connect(noise2Filter); noise2Filter.connect(noise2Gain); noise2Gain.connect(masterGain); noise2.start();
+
+    const crackle = createCrackle(audioCtx);
+    const crackleFilter = audioCtx.createBiquadFilter(); crackleFilter.type = 'highpass'; crackleFilter.frequency.value = 1000;
+    crackleGain = audioCtx.createGain(); crackleGain.gain.value = 0;
+    crackle.connect(crackleFilter); crackleFilter.connect(crackleGain); crackleGain.connect(masterGain); crackle.start();
+
+    [173, 185, 277, 293, 311, 467, 523].forEach((freq, i) => {
+      const osc = audioCtx.createOscillator(); osc.type = i % 2 === 0 ? 'sawtooth' : 'square'; osc.frequency.value = freq + (Math.random() - 0.5) * 8;
+      const g = audioCtx.createGain(); g.gain.value = 0;
+      const f = audioCtx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 600 + Math.random() * 400; f.Q.value = 1.5 + Math.random() * 3;
+      osc.connect(f); f.connect(g); g.connect(masterGain); osc.start();
+      dissonantOscs.push(osc); dissonantGains.push(g);
+      const lfo = audioCtx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 0.3 + Math.random() * 2.5;
+      const lg = audioCtx.createGain(); lg.gain.value = 3 + Math.random() * 8;
+      lfo.connect(lg); lg.connect(osc.frequency); lfo.start(); chaoticLfos.push(lfo);
+    });
+
+    warmGain = audioCtx.createGain(); warmGain.gain.value = 0;
+    warmOsc1 = audioCtx.createOscillator(); warmOsc1.type = 'sine'; warmOsc1.frequency.value = 110;
+    warmOsc2 = audioCtx.createOscillator(); warmOsc2.type = 'sine'; warmOsc2.frequency.value = 165;
+    warmOsc3 = audioCtx.createOscillator(); warmOsc3.type = 'sine'; warmOsc3.frequency.value = 220;
+    const wf = audioCtx.createBiquadFilter(); wf.type = 'lowpass'; wf.frequency.value = 400; wf.Q.value = 1;
+    const wg2 = audioCtx.createGain(); wg2.gain.value = 0.5;
+    const wg3 = audioCtx.createGain(); wg3.gain.value = 0.25;
+    warmOsc1.connect(wf); warmOsc2.connect(wg2); wg2.connect(wf); warmOsc3.connect(wg3); wg3.connect(wf);
+    wf.connect(warmGain); warmGain.connect(masterGain);
+    warmOsc1.start(); warmOsc2.start(); warmOsc3.start();
+
+    breathLfo = audioCtx.createOscillator(); breathLfo.type = 'sine'; breathLfo.frequency.value = 0.15;
+    breathLfoGain = audioCtx.createGain(); breathLfoGain.gain.value = 0;
+    breathLfo.connect(breathLfoGain); breathLfoGain.connect(warmGain.gain); breathLfo.start();
+  }
+
+  let soundEnabled = false;
+
+  function toggleSound() {
+    soundEnabled = !soundEnabled;
+    if (soundEnabled) {
+      if (!audioStarted) startAudio();
+      else if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    }
+    if (!soundEnabled && audioCtx && masterGain) {
+      masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
+      audioFadedOut = true;
+    }
+    document.querySelectorAll('.sound-btn').forEach(el => {
+      if (soundEnabled) el.classList.add('active');
+      else el.classList.remove('active');
+    });
+  }
+  document.getElementById('sound-btn-1').addEventListener('click', toggleSound);
+  document.getElementById('sound-btn-2').addEventListener('click', toggleSound);
+
+  function updateAudio(warmth) {
+    if (!audioStarted || !audioCtx || !soundEnabled) return;
+    const coldness = 1 - warmth;
+    const now = audioCtx.currentTime;
+
+    const timeSinceMove = Date.now() - lastSliderMove;
+    if (timeSinceMove < 2000) {
+      if (audioFadedOut) { masterGain.gain.setTargetAtTime(0.35, now, 0.3); audioFadedOut = false; }
+    } else {
+      if (!audioFadedOut) { masterGain.gain.setTargetAtTime(0, now, 1.0); audioFadedOut = true; }
+    }
+
+    noiseGain.gain.setTargetAtTime(Math.pow(coldness, 1.3) * 0.15, now, 0.2);
+    noiseFilter.frequency.setTargetAtTime(1200 + coldness * 4000, now, 0.2);
+    noise2Gain.gain.setTargetAtTime(Math.pow(coldness, 1.5) * 0.18, now, 0.3);
+    crackleGain.gain.setTargetAtTime(Math.pow(coldness, 1.2) * 0.25, now, 0.2);
+    dissonantGains.forEach((g, i) => { g.gain.setTargetAtTime(Math.max(0, Math.pow(coldness, 1.5) * 0.02 * (1 - i * 0.08)), now, 0.3); });
+    warmGain.gain.setTargetAtTime(Math.pow(warmth, 1.5) * 0.3, now, 0.4);
+    breathLfoGain.gain.setTargetAtTime(warmth * 0.12, now, 0.4);
+  }
+
+  // ============ RENDER ============
+  function render() {
+    let audioWarmth = 0.5;
+    if (currentTab === 'solo') { drawSoloFrame(); audioWarmth = val1 / 100; }
+    else { drawGroupFrame(); audioWarmth = val2 / 100; }
+    updateAudio(audioWarmth);
+    requestAnimationFrame(render);
+  }
+  render();
+
+  })();
+  </script>
+
+  <script src="path.js"></script>
+</body>
+</html>
