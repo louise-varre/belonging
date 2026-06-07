@@ -7,7 +7,7 @@
 
 const STEPS = [
   { id: 'belonging', title: 'Belonging' },
-  { id: 'evolution', title: 'Evolution' },
+  { id: 'evolution', title: 'The evolution of belonging' },
   { id: 'fire',      title: 'Around the fire' },
   { id: 'nervous-system', title: 'Nervous system' },
   { id: 'circle',    title: 'My why' },
