@@ -182,7 +182,7 @@
   .sci-deep summary:hover { color: var(--ember); }
   .sci-deep > p { margin: 0.9rem 0 0; font-size: var(--fs-body); }
   .sci-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; }
-  .chem-chip { cursor: pointer; }
+  .chem-chip { cursor: default; pointer-events: none; } /* chemicals not clickable for now */
 
   .chem-modal { display: none; position: fixed; inset: 0; z-index: 60; background: rgba(8,7,5,0.5); align-items: center; justify-content: center; padding: 24px; }
   .chem-modal.is-open { display: flex; }
