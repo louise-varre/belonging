@@ -372,12 +372,12 @@
         const rr = OUTER_R + 4 + cycle * (maxReach / 8);
         const fade = 1 - cycle / 8;
         const distFade = 1 - ((rr - OUTER_R) / maxReach);
-        const a = int * int * fade * fade * distFade * distFade * 0.78;
+        const a = int * int * fade * fade * distFade * 1.2;
         if (a < 0.003 || rr > OUTER_R + maxReach) continue;
         c1.beginPath(); c1.arc(CX,CY,rr,0,Math.PI*2);
-        // the rings on the water: a quiet grey, not reddish
-        c1.strokeStyle = `rgba(118,112,103,${a})`;
-        c1.lineWidth = (0.6 + fade * 1.4) * (distFade + 0.2);
+        // the rings on the water: a defined grey so they read on mobile as they travel out
+        c1.strokeStyle = `rgba(96,92,88,${a})`;
+        c1.lineWidth = (1.4 + fade * 2.2) * (distFade + 0.2) * mLW;
         c1.stroke();
       }
     }
