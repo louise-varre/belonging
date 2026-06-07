@@ -136,8 +136,7 @@
   .control-col--within .control-col__head { color: var(--ember); }
   .control-col--outside .control-col__head { color: var(--ink-soft); }
   .control-list { list-style: none; padding: 0; margin: 0; }
-  .control-list li { font-size: var(--fs-body); line-height: 1.5; color: var(--ink); padding: 0.6rem 0; border-top: 0.5px solid var(--line); }
-  .control-list li:first-child { border-top: none; padding-top: 0; }
+  .control-list li { font-size: var(--fs-body); line-height: 1.5; color: var(--ink); padding: 0.5rem 0; }
   @media (max-width: 640px) { .control-lists__inner { grid-template-columns: 1fr; gap: 2.4rem; } }
 </style>
 </head>
@@ -205,16 +204,6 @@
 
   <section class="control-lists">
     <div class="control-lists__inner">
-      <div class="control-col control-col--within">
-        <p class="control-col__head">Within my control</p>
-        <ul class="control-list">
-          <li>Where I place my attention</li>
-          <li>How I read what happens, the meaning I give it</li>
-          <li>My actions and the effort behind them</li>
-          <li>How I respond when something goes wrong</li>
-          <li>How I treat other people</li>
-        </ul>
-      </div>
       <div class="control-col control-col--outside">
         <p class="control-col__head">Outside my control</p>
         <ul class="control-list">
@@ -223,6 +212,16 @@
           <li>What has already happened</li>
           <li>What happens next</li>
           <li>The outcome, once I have done my part</li>
+        </ul>
+      </div>
+      <div class="control-col control-col--within">
+        <p class="control-col__head">Within my control</p>
+        <ul class="control-list">
+          <li>Where I place my attention</li>
+          <li>How I read what happens, the meaning I give it</li>
+          <li>My actions and the effort behind them</li>
+          <li>How I respond when something goes wrong</li>
+          <li>How I treat other people</li>
         </ul>
       </div>
     </div>
