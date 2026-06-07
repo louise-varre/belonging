@@ -10,7 +10,7 @@ const STEPS = [
   { id: 'evolution', title: 'Evolution' },
   { id: 'fire',      title: 'Around the fire' },
   { id: 'nervous-system', title: 'Nervous system' },
-  { id: 'circle',    title: 'My why' },
+  { id: 'circle',    title: 'Inner and outer circle' },
 ];
 
 const SCIENCE = { id: 'science', title: 'The science' };
