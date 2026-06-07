@@ -380,13 +380,11 @@
     const wall = act.wall
       ? act.wall.trim().split(/\n\n+/).map(p => '<p>' + p.trim() + '</p>').join('')
       : '';
-    const chips = (act.chemicals && act.chemicals.length)
-      ? '<div class="sci-chips">' + act.chemicals.map(chipHTML).join('') + '</div>'
-      : '';
-    const deep = (act.science || chips)
+    // chemical chips removed for now — show the science text only
+    const deep = act.science
       ? '<details class="sci-deep"><summary>The science</summary>' +
-        (act.science ? act.science.trim().split(/\n\n+/).map(p => '<p>' + p.trim() + '</p>').join('') : '') +
-        chips + '</details>'
+        act.science.trim().split(/\n\n+/).map(p => '<p>' + p.trim() + '</p>').join('') +
+        '</details>'
       : '';
     bodyEl.innerHTML = wall + deep;
     panel.classList.add('is-open');
