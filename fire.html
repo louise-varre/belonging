@@ -27,11 +27,19 @@
     margin: 0 auto;
   }
 
+  .stage-fit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .stage {
     position: relative;
     width: min(58vh, 82vw, 560px);
     height: min(58vh, 82vw, 560px);
     flex: none;
+    transform-origin: 50% 50%;
   }
 
   .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; overflow: visible; }
@@ -231,7 +239,7 @@
 
   <header class="site-header">
     <a class="site-logo" href="index.html" aria-label="I belong — Eldvarm"><img src="images/eldvarm-logo.png" alt="Eldvarm"></a>
-    <button class="jump-open" id="jump-open">Content</button>
+    <button class="jump-open" id="jump-open">Contents</button>
   </header>
 
   <main class="step step--fire">
@@ -239,11 +247,13 @@
       <h1>Around the fire</h1>
       <p class="lede">The combination of the flame and its heat, and all of these activities, made us feel good, the warmth of being close and the sense that we mattered to the people there, and at the same time settled the body out of its alert state into calm. Open any of them to see how it works.</p>
     </div>
-    <div class="stage">
-      <svg id="lines" viewBox="0 0 760 760" preserveAspectRatio="xMidYMid meet"></svg>
-      <canvas id="flame" width="760" height="760"></canvas>
-      <button class="centre activity--link" id="centre" type="button"><span class="word">Flame &amp; warmth</span></button>
-      <div id="activities"></div>
+    <div class="stage-fit" id="stage-fit">
+      <div class="stage">
+        <svg id="lines" viewBox="0 0 760 760" preserveAspectRatio="xMidYMid meet"></svg>
+        <canvas id="flame" width="760" height="760"></canvas>
+        <button class="centre activity--link" id="centre" type="button"><span class="word">Flame &amp; warmth</span></button>
+        <div id="activities"></div>
+      </div>
     </div>
   </main>
 
@@ -481,8 +491,39 @@
     cv.width = rect.width * DPR;
     cv.height = rect.height * DPR;
   }
+  // scale the whole wheel, labels included, to fit the available width.
+  // on a wide screen there is room and the scale stays at 1; on a narrow
+  // screen it shrinks so the side titles never run past the edge.
+  const stageFit = document.getElementById('stage-fit');
+  const stageEl = document.querySelector('.stage');
+  function fitStage() {
+    stageEl.style.transform = 'none';
+    stageFit.style.height = '';
+    const avail = stageFit.clientWidth;
+    const els = [stageEl, ...actLayer.children, document.getElementById('centre')];
+    let l = Infinity, r = -Infinity, t = Infinity, b = -Infinity;
+    els.forEach(el => {
+      const box = el.getBoundingClientRect();
+      if (box.left < l) l = box.left;
+      if (box.right > r) r = box.right;
+      if (box.top < t) t = box.top;
+      if (box.bottom > b) b = box.bottom;
+    });
+    const contentW = r - l, contentH = b - t;
+    if (!contentW) return;
+    const s = Math.min(1, (avail * 0.98) / contentW);
+    if (s < 1) {
+      stageEl.style.transform = 'scale(' + s + ')';
+      stageFit.style.height = (contentH * s) + 'px';
+    }
+  }
+
   sizeCanvas();
-  window.addEventListener('resize', sizeCanvas);
+  requestAnimationFrame(() => { fitStage(); sizeCanvas(); });
+  window.addEventListener('resize', () => { fitStage(); sizeCanvas(); });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => { fitStage(); sizeCanvas(); });
+  }
 
   function draw() {
     const t = Date.now() / 1000;

@@ -72,7 +72,7 @@
   .slider-labels { display: flex; justify-content: space-between; margin-bottom: 14px; }
   .slider-label {
     font-family: var(--body);
-    font-size: var(--fs-label);
+    font-size: 0.75rem;
     font-weight: 400;
     letter-spacing: var(--track-caps);
     text-transform: uppercase;
@@ -113,7 +113,7 @@
     top: 56px;
     transform: translateX(-50%);
     font-family: var(--body);
-    font-size: var(--fs-label);
+    font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: var(--track-caps);
     text-transform: uppercase;
@@ -132,11 +132,11 @@
   /* two lists underneath the circle: what is / isn't within my control (echoes the slider) */
   .control-lists { padding: clamp(3rem, 9vh, 6.5rem) var(--pad) clamp(4rem, 11vh, 7.5rem); user-select: text; }
   .control-lists__inner { max-width: 50rem; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2.2rem, 6vw, 4.5rem); }
-  .control-col__head { font-family: var(--body); font-size: var(--fs-small); font-weight: 600; letter-spacing: var(--track-caps); text-transform: uppercase; margin: 0 0 1.1rem; }
+  .control-col__head { font-family: var(--body); font-size: 0.75rem; font-weight: 600; letter-spacing: var(--track-caps); text-transform: uppercase; margin: 0 0 1.1rem; }
   .control-col--within .control-col__head { color: var(--ember); }
   .control-col--outside .control-col__head { color: var(--ink-soft); }
   .control-list { list-style: none; padding: 0; margin: 0; }
-  .control-list li { font-size: var(--fs-body); line-height: 1.5; color: var(--ink); padding: 0.5rem 0; }
+  .control-list li { font-size: 0.875rem; line-height: 1.5; color: var(--ink); padding: 0.5rem 0; }
   @media (max-width: 640px) { .control-lists__inner { grid-template-columns: 1fr; gap: 2.4rem; } }
 </style>
 </head>
