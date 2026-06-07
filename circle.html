@@ -398,7 +398,7 @@
     const ringG = Math.round(115 - coldness * 42);
     const ringB = Math.round(106 - coldness * 38);
     const ringAlpha = 0.5 + coldness * 0.42;
-    const ringWidth = (2 + coldness * 2) * mLW;
+    const ringWidth = (4.3 + coldness * 2.5) * mLW; // matched to the fire page's ring weight
     c1.beginPath();c1.arc(CX,CY,OUTER_R,0,Math.PI*2);c1.strokeStyle=`rgba(${ringR},${ringG},${ringB},${ringAlpha})`;c1.lineWidth=ringWidth;c1.stroke();
 
     c1.save();
@@ -425,7 +425,7 @@
     const cg=c1.createRadialGradient(CX,CY,0,CX,CY,coreR);cg.addColorStop(0,`rgba(255,232,160,${warmth*0.5})`);cg.addColorStop(1,'rgba(238,190,110,0)');
     c1.beginPath();c1.arc(CX,CY,coreR,0,Math.PI*2);c1.fillStyle=cg;c1.fill();
 
-    c1.beginPath();c1.arc(CX,CY,innerR,0,Math.PI*2);c1.strokeStyle=`rgba(224,166,88,${0.55+warmth*0.35})`;c1.lineWidth=2.5*mLW;c1.stroke();
+    c1.beginPath();c1.arc(CX,CY,innerR,0,Math.PI*2);c1.strokeStyle=`rgba(224,166,88,${0.55+warmth*0.35})`;c1.lineWidth=6*mLW;c1.stroke();
 
     thumb1.style.left=val1+'%';focus1.style.left=val1+'%';
     thumb1.style.background=warmth>0.6?'#B4633C':warmth<0.4?'#6E665C':'#8A6B4A';
@@ -534,7 +534,7 @@
       // the outer ring: "what I cannot affect"
       c2.beginPath(); c2.arc(p.cx, p.cy, p.outerR, 0, Math.PI * 2);
       c2.strokeStyle = `rgba(${ringR},${ringG},${ringB},${0.42 + coldness * 0.45})`;
-      c2.lineWidth = (1.7 + coldness * 1.5) * mLW; c2.stroke();
+      c2.lineWidth = (2.6 + coldness * 2) * mLW; c2.stroke();
 
       // Darker pool inside the outer circle: a deep warm brown (not black) that fades to
       // transparent toward the centre. Deepest when the inner circle is small ("outside my
@@ -560,7 +560,7 @@
       // the inner ring: "what I can affect" (grows as you focus on what you can control)
       c2.beginPath(); c2.arc(p.cx, p.cy, innerR, 0, Math.PI * 2);
       c2.strokeStyle = `rgba(224,166,88,${0.5 + warmth * 0.4})`;
-      c2.lineWidth = 2 * mLW; c2.stroke();
+      c2.lineWidth = 3.5 * mLW; c2.stroke();
     });
 
     // Third pass: ripples connecting the gathered circles
