@@ -1,0 +1,3 @@
+# Netlify redirects
+# balance.html was renamed to nervous-system.html (2026-06-07)
+/balance.html   /nervous-system.html   301

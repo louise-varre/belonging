@@ -1,5 +1,5 @@
 /* The neurochemicals — the single source for the eight chemicals across the site.
-   Edit a chemical here and science.html, balance.html and fire.html all follow.
+   Edit a chemical here and science.html, nervous-system.html and fire.html all follow.
    Mirrors neurochemicals-dictionary.md (reviewed 31 May 2026). British English.
    type: calm = calming, mixed = reward, active = stress. */
 
@@ -149,7 +149,7 @@
     }
   ];
 
-  /* keyed by lowercase name, for the chip / modal lookups (balance, fire) */
+  /* keyed by lowercase name, for the chip / modal lookups (nervous-system, fire) */
   var CHEM = {};
   CHEMICALS.forEach(function (c) { CHEM[c.key] = c; });
   CHEM['moderate cortisol'] = CHEM.cortisol;

@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The balance · I belong</title>
+<title>Doing and being · I belong</title>
 <link rel="stylesheet" href="shell.css">
 <style>
   /* helper variables, matched to the brand, so the ported markup resolves */
-  body[data-step="balance"] {
+  body[data-step="nervous-system"] {
     --text: var(--ink); --text2: var(--ink-soft);
     --bg2: var(--bg-soft);
     --border: var(--line); --border-mid: rgba(33,30,26,0.22); --border-strong: rgba(33,30,26,0.36);
@@ -15,14 +15,14 @@
   }
 
   /* this step scrolls, rather than sitting on one screen */
-  body[data-step="balance"] .step {
+  body[data-step="nervous-system"] .step {
     min-height: 100svh;
     justify-content: flex-start;
     padding-top: clamp(3.5rem, 8vh, 6rem);
     padding-bottom: 6rem;
   }
-  body[data-step="balance"] .lede { margin-top: 1.1rem; }
-  body[data-step="balance"] .lede:first-of-type { margin-top: 1.6rem; }
+  body[data-step="nervous-system"] .lede { margin-top: 1.1rem; }
+  body[data-step="nervous-system"] .lede:first-of-type { margin-top: 1.6rem; }
   .balance-block { margin-top: clamp(2.4rem, 6vh, 4rem); }
   .section-heading { margin-bottom: 1.4rem; }
 
@@ -104,7 +104,7 @@
   }
 </style>
 </head>
-<body data-step="balance">
+<body data-step="nervous-system">
 
   <header class="site-header">
     <a class="site-logo" href="index.html" aria-label="I belong — Eldvarm"><img src="images/eldvarm-logo.png" alt="Eldvarm"></a>
@@ -113,11 +113,8 @@
 
   <main class="step">
     <div class="step__inner">
-      <h1>The balance</h1>
-      <p class="lede">At Eldvarm we say that we want to create moments of being, in a world busy doing.</p>
-      <p class="lede">The body is made for both, to act and to rest, and it is built to move between them. Every night, around the fire, we did the things that returned us to our baseline: we gathered, we ate together, we sang, we sat close, we told stories as the light went down. We did them for hundreds of thousands of years, and the body still knows them.</p>
-      <p class="lede">Our hope is simply to remember what those activities were. The fire was where we did them, and a flame today can remind us, but the activities themselves were never bound to the fire. They are still here, still ours, and available to us at any time.</p>
-      <p class="lede">Below is some of the science behind it, for those who are extra curious.</p>
+      <h1>Doing and being</h1>
+      <p class="lede">At Eldvarm we want to create moments of being, in a world busy doing. The body is made for both, to act and to rest, and it is built to move between them, and the activities that returned us to rest were the ones we did each night around the fire, when we gathered, ate together, sang, sat close and told stories as the light went down. The fire was where we did them, but they were never bound to it, and they are still here, still ours, and available to us at any time.</p>
 
       <!-- the two systems -->
       <div class="balance-block">
