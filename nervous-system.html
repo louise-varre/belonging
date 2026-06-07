@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doing and being · I belong</title>
+<title>The nervous system · I belong</title>
 <link rel="stylesheet" href="shell.css">
 <style>
   /* helper variables, matched to the brand, so the ported markup resolves */
-  body[data-step="nervous-system"] {
+  body[data-step="balance"] {
     --text: var(--ink); --text2: var(--ink-soft);
     --bg2: var(--bg-soft);
     --border: var(--line); --border-mid: rgba(33,30,26,0.22); --border-strong: rgba(33,30,26,0.36);
@@ -15,14 +15,14 @@
   }
 
   /* this step scrolls, rather than sitting on one screen */
-  body[data-step="nervous-system"] .step {
+  body[data-step="balance"] .step {
     min-height: 100svh;
     justify-content: flex-start;
     padding-top: clamp(3.5rem, 8vh, 6rem);
     padding-bottom: 6rem;
   }
-  body[data-step="nervous-system"] .lede { margin-top: 1.1rem; }
-  body[data-step="nervous-system"] .lede:first-of-type { margin-top: 1.6rem; }
+  body[data-step="balance"] .lede { margin-top: 1.1rem; }
+  body[data-step="balance"] .lede:first-of-type { margin-top: 1.6rem; }
   .balance-block { margin-top: clamp(2.4rem, 6vh, 4rem); }
   .section-heading { margin-bottom: 1.4rem; }
 
@@ -31,7 +31,7 @@
   .sys-card { border-radius: 4px; padding: 22px 24px; border: 0.5px solid var(--border); }
   .sys-card.sym, .sys-card.para { background: var(--bg-soft); color: var(--ink); }
   .sys-toggle { width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit; background: none; border: none; padding: 0; display: block; }
-  .sys-title { font-size: var(--fs-body); font-weight: 500; margin-bottom: 10px; }
+  .sys-title { font-size: var(--fs-body); font-weight: 700; margin-bottom: 10px; }
   .sys-essence { font-size: var(--fs-body); line-height: 1.6; }
   .sys-more { margin-top: 14px; font-size: var(--fs-label); font-weight: 500; letter-spacing: var(--track-caps); text-transform: uppercase; opacity: 0.7; }
   .sys-more__close { display: none; }
@@ -104,7 +104,7 @@
   }
 </style>
 </head>
-<body data-step="nervous-system">
+<body data-step="balance">
 
   <header class="site-header">
     <a class="site-logo" href="index.html" aria-label="I belong — Eldvarm"><img src="images/eldvarm-logo.png" alt="Eldvarm"></a>
@@ -113,8 +113,8 @@
 
   <main class="step">
     <div class="step__inner">
-      <h1>Doing and being</h1>
-      <p class="lede">At Eldvarm we want to create moments of being, in a world busy doing. The body is made for both, to act and to rest, and it is built to move between them, and the activities that returned us to rest were the ones we did each night around the fire, when we gathered, ate together, sang, sat close and told stories as the light went down. The fire was where we did them, but they were never bound to it, and they are still here, still ours, and available to us at any time.</p>
+      <h1>The nervous system</h1>
+      <p class="lede">At Eldvarm we want to create moments of being, in a world busy doing. The body is made for both, to act and to rest, and to move between them. What returned us to rest were the things we did each night around the fire: we gathered, ate together, sang, sat close and told stories as the light went down. The fire was where we did them, but they were never bound to it, and they are still here, still ours, available to us at any time.</p>
 
       <!-- the two systems -->
       <div class="balance-block">
